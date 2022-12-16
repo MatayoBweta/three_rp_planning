@@ -1,0 +1,14 @@
+name: 3rp_planning
+title: 3RP PLANNING
+username: matayo@unhcr.org
+account: matayo@unhcr.org
+server: rstudio.unhcr.org
+hostUrl: https://rstudio.unhcr.org/__api__
+appId: 115
+bundleId: 476
+url: https://rstudio.unhcr.org/iraq/3rp-planning/
+when: 1671035863.69407
+lastSyncTime: 1671035863.69408
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|app_bu.R|app_dashboard.R
