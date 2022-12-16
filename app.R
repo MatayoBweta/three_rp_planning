@@ -183,22 +183,22 @@ present_mistakes <- function(data, rules) {
       fluidRow(
         column(
           3,
-          p("Rows:", class = "badge bg-primary text-wrap fs-5"),
+          p("Rows:", class = "badge bg-primary text-wrap text-primary fs-5"),
           p(items, class = "fs-5 fw-bold")
         ),
         column(
           3,
-          p("NULL Values:", class = "badge bg-warning text-wrap fs-5"),
+          p("NULL Values:", class = "badge bg-warning text-wrap text-warning fs-5"),
           p(nNA, class = "fs-5 fw-bold")
         ),
         column(
           3,
-          p("Passed the Criteria:", class = "badge bg-success text-wrap fs-5"),
+          p("Passed the Criteria:", class = "badge bg-success text-wrap text-success fs-5"),
           p(passes, class = "fs-5 fw-bold")
         ),
         column(
           3,
-          p("Failed:", class = "badge bg-danger text-wrap fs-5"),
+          p("Failed:", class = "badge bg-danger text-danger text-wrap fs-5"),
           p(fails, class = "fs-5 fw-bold")
         )
       ),
