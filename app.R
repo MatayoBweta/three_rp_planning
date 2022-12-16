@@ -868,12 +868,15 @@ rank = same; data_c1; data_c2; data_c3; label = 'Data Capabilities';
 
 # edge definitions with the node IDs
 data0 -> data1 -> {data2 data3}  -> process -> {data5 data6}
+
 data5 -> process_br
 process_com1 -> process_com2 -> process_com3 -> results
 data0 -> data4
 process_br -> data7
-{data7 data5 data6} -> process_com1
-
+{data7 data5 data6 data4} -> process_com1
+data_c1 -> data_c2 -> data_c3 [style=invis];
+data0 -> data_c1
+data_c3 -> results
 }")
   })
   
@@ -2875,7 +2878,7 @@ process_br -> data7
       glimpse(existing_budget)
       
       indicator_values <-
-        (hot_to_r(input$tbl_indicators)) %>% rownames_to_column()
+        (hot_to_r(input$tbl_indicators_sec)) %>% rownames_to_column()
       
       glimpse(indicator_values)
       
