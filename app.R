@@ -271,8 +271,7 @@ ui <- fluidPage(
     # add image on top ?
     tags_top =
       tags$div(
-        tags$h4("3RP Data Collection - Agency Planning Tool", style = "align:center"),
-        
+        tags$h4("3RP Data Collection - Agency Planning Tool", style = "align:center")
       ),
     # add information on bottom ?
     tags_bottom = tags$div(
@@ -346,6 +345,17 @@ ui <- fluidPage(
       tabPanel(
         "Instructions",
         id = "instructions_tab",
+        h1("Introduction"),
+        HTML("<p style=‘text-align:justify’>This platform efficiently handles the 3RP&#39;s information by supplying all the necessary components for the 3RP&#39;s data coordination.</p>
+<p style=‘text-align:justify’>Data coordination is the process of organizing, managing, and distributing data so that it is accurate, consistent, and useable. Effective data coordination is necessary for ensuring that data is accessible, dependable, and valuable and for allowing businesses to maximize their data assets.</p>
+<p style=‘text-align:justify’>This platform provides various crucial data coordination pieces, including:</p>
+<ul>
+	<li style=‘text-align: justify;’><strong>Data governance</strong>: This involves establishing policies, procedures, and standards for managing data, including who has access to it and how it can be used. The governance is driven by 3RP guidance and is integrated into the tool steps to implement.</li>
+	<li style=‘text-align: justify;’><strong>Data management</strong>: This includes storing, organizing, and protecting data, as well as ensuring that it is accurate, consistent, and up to date. An embedded data quality module ensures that the appropriate stakeholders know and address the data quality issues promptly.</li>
+	<li style=‘text-align: justify;’><strong>Data sharing</strong>: It involves making data available to authorized users within an organization or beyond, including using data portals or other tools. The system allows downloading the data in excel format and sharing it with other stakeholders.</li>
+	<li style=‘text-align: justify;’><strong>Data integration</strong>: This involves combining data from different sources, systems, or formats to create a single, cohesive view of the data. All the data produced in the system will be directly registered in Activity Info, and that can facilitate the follow-up and ensure that the data is well integrated with existing systems in place for planning and monitoring.</li>
+</ul>
+<p style=‘text-align:justify’>Data coordination is essential because it helps organizations use and leverage their data assets effectively and make informed, data-driven decisions. Organization, IM, Sector Leads, and Inter-Sectoral coordination groups can access the same dataset during the modifications using this unique tool.</p>"),
         h1("Instructions on Organization Planning"),
         HTML(
           paste0(
@@ -615,25 +625,25 @@ ui <- fluidPage(
           h1("Sector Lead Review"),
           HTML("<p style='text-align:justify'><strong>Sector leads</strong> should review and validate the data collected by the organization under their responsibilities. Reviewing the data is <strong>a crucial phase</strong> in the data analysis process. It entails evaluating the data thoroughly to verify that it is <strong>correct</strong>, <strong>comprehensive</strong>, and <strong>legitimate</strong>. This is crucial because erroneous or insufficient data might result in faulty conclusions and poor decision-making. In addition to identifying any faults or inaccuracies in the data, such as missing numbers or outliers, data review may also guarantee that the data is prepared for future analysis. In addition, data assessment may enhance the reliability and credibility of the analysis&#39;s findings by assuring the data&#39;s high quality. A comprehensive data review is vital for assuring the integrity and dependability of the data and the analytical outcomes.</p>"),
           actionButton("to_refresh_sector_lead", label = "Refresh Data",class="btn btn-success btn-lg text-bg-success"),
+          div(class ="alert alert-danger mt-n1",
+              h4("Changing organization data!",class="alert-heading"),
+              p("It is not suggested to update an organization's data using this interface, since doing so may result in data inconsistencies with those already known to the organization that submitted them. Please inform the organization's focal point for any needed modifications, so they can implement them at their level inside the application."),
+              hr(),
+              p("In case, you want to update information here, you can extract the data and submit it to UNHCR IM Unit for upload.",class="mb-0")),
           h2("Budget Requirements Review"),
-          rHandsontableOutput('tbl_budget_requirement_sec'),
+          gt_output('tbl_budget_requirement_sec'),
           
           h2("Budget Contributions Review"),
-          rHandsontableOutput('tbl_existing_budget_sec'),
+          gt_output('tbl_existing_budget_sec'),
           h2("Indicator Review"),
-          rHandsontableOutput('tbl_indicators_sec'),
+          gt_output('tbl_indicators_sec'),
           br(),
           fluidRow(
             column(
               4,
-              offset = 4,
+              offset = 8,
               align = "right",
               downloadButton("to_xlsx_download_review", label = "Download")
-            ),
-            column(
-              4,
-              align = "right",
-              actionButton("to_db_review", label = "Send to Activity Info",class="btn btn-primary text-bg-primary")
             )
           )
           
@@ -806,7 +816,9 @@ server <- function(input, output, session) {
   output$status_of_sector_lead <- renderUI({
     req(auth$result)  # <---- dependency on authentication result
     req(values$main_sector)
-    text_sl <- ""
+    text_sl <- paste0(
+      "<p style='text-align:justify' class='align-middle'><span style='font-size:18px'><strong>Sector of the Sector Lead: <u><em>NOT SELECTED</em></u></strong></span></p>"
+    )
   if(nrow(values$main_sector) == 1) text_sl <- paste0(
         "<p style='text-align:justify' class='align-middle'><span style='font-size:18px'><strong>Sector of the Sector Lead: <u><em>",
         values$main_sector$code_name,
@@ -1414,7 +1426,7 @@ data_c3 -> results
     values$refresh_dashboard
     dt <- summary_per_sector() %>%
       gt() %>%
-      cols_hide(columns = c(organization, planning_year))%>%
+      cols_hide(columns = c(organization, planning_year)) %>%
       tab_spanner(
         label = "Outputs",
         columns = c(number_of_outputs, number_of_outputs_with_budget)
@@ -2209,69 +2221,59 @@ data_c3 -> results
       hot_rows(rowHeights = NULL )
   })
   
-  output$tbl_budget_requirement_sec = renderRHandsontable({
-    rhandsontable(
-      planning_refresh_sec() %>% remove_rownames %>% column_to_rownames(var = "id"),
-      height = height_table,
-      width = "100%",
-      
-      stretchH = "all",
-      rowHeaderWidth = width_key,
-      colHeaders = c(
-        "Planning Year",
-        "Sector",
-        "Organization",
-        "Output",
-        "Budget Requirement",
-        "Youth Budget",
-        "Refugee Budget",
-        "Resilience Budget",
-        "To Consider",
-        "Active"
-      ),
-      showToolbar = TRUE,
-      search = TRUE
-    ) %>%
-      hot_col(c(2, 3, 4, 9,10), readOnly = TRUE) %>%
-      hot_col(
-        5,
-        readOnly = TRUE,
-        renderer = "function(instance, td, row, col, prop, value, cellProperties) {
-              Handsontable.renderers.NumericRenderer.apply(this, arguments);
-      }",
-        type = "numeric",
-        format = "$0,0.00"
+  output$tbl_budget_requirement_sec = render_gt({
+    planning_refresh_sec() %>% remove_rownames %>% column_to_rownames(var = "id") %>%
+      group_by(organization) %>%
+      gt() %>%
+      cols_hide(columns = c(sector,to_consider,active)) %>%
+      fmt_currency(
+        columns = c(youth_budget, budget_requirement, refugee_budget, resilience_budget),
+        currency = "USD",
+        decimals = 0
       ) %>%
-      hot_col(1,
-              readOnly = TRUE,
-              type = "numeric",
-              format = "0") %>%
-      hot_col(
-        c(6, 7, 8),
-        readOnly = !values$planning_open,
-        renderer = "function(instance, td, row, col, prop, value, cellProperties) {
-              Handsontable.renderers.NumericRenderer.apply(this, arguments);
-              td.style.background = '#CFFFF2';
-      }",
-        type = "numeric",
-        format = "$0,0.00"
-      ) %>%
-      hot_cols(
-        columnSorting = TRUE,
-        manualColumnResize = TRUE
-        ,
-        colWidths = c(80, 160, 200, 250, 140, 140, 140, 140, 80, 80)
-      ) %>%
-      hot_table(highlightCol = TRUE, highlightRow = TRUE) %>%
-      hot_context_menu(
-        allowRowEdit = FALSE,
-        allowColEdit = FALSE,
-        allowReadOnly = FALSE,
-        allowComments = FALSE,
-        allowCustomBorders = FALSE,
-        customOpts = list()
+      tab_spanner(
+        label = "Budget requirements amount",
+        columns = c(youth_budget, budget_requirement, refugee_budget, resilience_budget)
       )%>%
-      hot_rows(rowHeights = NULL )
+      tab_header(
+        title = md("**SUMMARY OF THE BUDGET REQUIREMENTS**"),
+        subtitle = "Provide key informations about each sector budget requirements for the sector lead and co-lead"
+      ) %>%
+      cols_label(
+        planning_year ="Planning Year",
+        output = "Output",
+        budget_requirement ="Budget Requirement",
+        youth_budget ="Youth Budget",
+        refugee_budget ="Refugee Budget",
+        resilience_budget ="Resilience Budget",
+        ) %>%
+      summary_rows(
+        groups = TRUE,
+        columns = c(refugee_budget, resilience_budget,budget_requirement,youth_budget),
+        fns = list(
+          TOTAL = ~sum(.,na.rm = TRUE)),
+        formatter = fmt_currency
+      ) %>%
+      grand_summary_rows (
+        columns = c(refugee_budget, resilience_budget,budget_requirement,youth_budget),
+        fns = list(
+          GRAND_TOTAL = ~sum(.,na.rm = TRUE)),
+        formatter = fmt_currency
+      ) %>%
+      tab_style_body(
+        style = cell_fill(color = "red",alpha = 0.3),
+        values = c(0.00)
+      ) %>%
+      opt_horizontal_padding(scale = 3) %>%
+      opt_stylize(style = 2, color = "green") %>%
+      tab_options(
+        row_group.background.color = "#d3a588",
+        row_group.border.top.color = "#faad4f",
+        row_group.border.bottom.style = "none",
+        table.width = "97%",
+        column_labels.background.color = "#0a6e4f"
+      )%>%
+      opt_all_caps()
   })
   
   output$tbl_existing_budget = renderRHandsontable({
@@ -2345,66 +2347,66 @@ data_c3 -> results
       hot_rows(rowHeights = NULL )
   })
   
-  output$tbl_existing_budget_sec = renderRHandsontable({
-    rhandsontable(
-      planning_py_refresh_sec() %>% remove_rownames %>% column_to_rownames(var = "id"),
-      height = height_table,
-      width = "100%",
-      stretchH = "all",
-      rowHeaderWidth = width_key,
-      colHeaders = c(
-        "Planning Year",
-        "Year",
-        "Sector",
-        "Organization",
-        "Contribution Type",
-        "Donors",
-        "Refugee Contribution",
-        "Resilience Contribution",
-        "To Consider",
-        "Active"
-      ),
-      showToolbar = TRUE ,
-      search = TRUE
-    ) %>%
-      hot_col(c(3, 4, 5, 6, 9,10), readOnly = TRUE) %>%
-      hot_col(
-        readOnly = !values$planning_open,
-        2,
-        renderer = "function(instance, td, row, col, prop, value, cellProperties) {
-              Handsontable.renderers.NumericRenderer.apply(this, arguments);
-              td.style.background = '#CFFFF2';}",
-        format = "0"
+  output$tbl_existing_budget_sec = render_gt({
+    planning_py_refresh_sec() %>% remove_rownames %>% column_to_rownames(var = "id") %>%
+      mutate(org_budget_type = paste0(organization," ",budget_type)) %>%
+      group_by(org_budget_type) %>%
+      gt() %>%
+      cols_hide(columns = c(sector,to_consider,active,budget_type,organization)) %>%
+      fmt_currency(
+        columns = c(refugee_budget, resilience_budget),
+        currency = "USD",
+        decimals = 0
       ) %>%
-      hot_col(1,
-              readOnly = TRUE,
-              type = "numeric",
-              format = "0") %>%
-      hot_col(
-        readOnly = !values$planning_open,
-        c(7, 8),
-        renderer = "function(instance, td, row, col, prop, value, cellProperties) {
-              Handsontable.renderers.NumericRenderer.apply(this, arguments);
-              td.style.background = '#CFFFF2';}",
-        type = "numeric",
-        format = "$0,0.00"
-      )  %>%
-      hot_cols(
-        columnSorting = TRUE,
-        manualColumnResize = TRUE
-        ,
-        colWidths = c(80, 80, 160, 275, 100, 275, 140, 140, 80, 80)
-      ) %>%
-      hot_table(highlightCol = TRUE, highlightRow = TRUE) %>%
-      hot_context_menu(
-        allowRowEdit = FALSE,
-        allowColEdit = FALSE,
-        allowReadOnly = FALSE,
-        allowComments = FALSE,
-        allowCustomBorders = FALSE,
-        customOpts = list()
+      tab_spanner(
+        label = "Budget contributions amount",
+        columns = c(refugee_budget, resilience_budget)
       )%>%
-      hot_rows(rowHeights = NULL )
+      tab_header(
+        title = md("**SUMMARY OF THE BUDGET CONTRIBUTIONS**"),
+        subtitle = "Provide key informations about each sector budget contributions for the sector lead and co-lead"
+      ) %>%
+      cols_label(
+        planning_year ="Planning Year",
+        donors = "Donors",
+        refugee_budget ="Refugee Contributions",
+        resilience_budget ="Resilience contributions",
+      )  %>%
+      sub_missing(
+        columns = 2
+      ) %>%
+      summary_rows(
+        groups = TRUE,
+        columns = c(refugee_budget, resilience_budget),
+        fns = list(
+          TOTAL = ~sum(.,na.rm = TRUE)),
+        formatter = fmt_currency
+      ) %>%
+      grand_summary_rows(
+        columns = c(refugee_budget, resilience_budget),
+        fns = list(
+          GRAND_TOTAL = ~sum(.,na.rm = TRUE)),
+        formatter = fmt_currency
+      ) %>%
+      tab_style_body(
+        style = cell_fill(color = "red",alpha = 0.3),
+        values = c(0.00)
+      ) %>%
+      tab_style_body(
+        style = cell_fill(color = "red",alpha = 0.3),
+        fn = function(x) is.na(x)
+      ) %>%
+      opt_horizontal_padding(scale = 3) %>%
+      opt_stylize(style = 2, color = "green") %>%
+      tab_options(
+        row_group.background.color = "#d3a588",
+        row_group.border.top.color = "#faad4f",
+        row_group.border.bottom.style = "none",
+        table.width = "97%",
+        column_labels.background.color = "#0a6e4f"
+      ) %>%
+      opt_all_caps()
+    
   })
   
   output$tbl_indicators = renderRHandsontable({
@@ -2468,57 +2470,59 @@ data_c3 -> results
       hot_rows(rowHeights = NULL )
   })
   
-  output$tbl_indicators_sec = renderRHandsontable({
-    rhandsontable(
-      indicator_target_refresh_sec() %>% remove_rownames %>% column_to_rownames(var = "id"),
-      height = height_table,
-      width = "100%",
-      stretchH = "all",
-      rowHeaderWidth = width_key,
-      colHeaders = c(
-        "Planning Year",
-        "Organization",
-        "Sector",
-        "Output",
-        "Indicator",
-        "Indicator Target",
-        "To Consider",
-        "Active"
-      ),
-      showToolbar = TRUE ,
-      search = TRUE
-    ) %>%
-      hot_col(c(1, 2, 3, 4, 5, 7,8), readOnly = TRUE) %>%
-      hot_col(1,
-              readOnly = TRUE,
-              type = "numeric",
-              format = "0") %>%
-      hot_col(
-        readOnly = !values$planning_open,
-        6,
-        renderer = "function(instance, td, row, col, prop, value, cellProperties) {
-              Handsontable.renderers.NumericRenderer.apply(this, arguments);
-              td.style.background = '#CFFFF2';}",
-        type = "numeric",
-        format = "0,0.00"
+  output$tbl_indicators_sec = render_gt({
+    
+      indicator_target_refresh_sec() %>% remove_rownames %>% column_to_rownames(var = "id") %>%
+      group_by(indicator) %>%
+      gt() %>%
+      cols_hide(columns = c(sector,to_consider,active)) %>%
+      tab_spanner(
+        label = "INDICATOR DETAILS",
+        columns = c(organization,indicator_target)
+      ) %>% fmt_number(
+        columns = indicator_target,
+        decimals = 0
       ) %>%
-      hot_cols(
-        columnSorting = TRUE,
-        manualColumnResize = TRUE
-        ,
-        colWidths = c(80, 235, 235, 300, 300, 100, 80, 80)
+      tab_header(
+        title = md("**SUMMARY OF THE INDICATORS TARGET**"),
+        subtitle = "Provide key informations about each indicator target for the sector lead and co-lead"
+      ) %>% cols_move(
+        columns = output,
+        after = planning_year
       ) %>%
-      hot_table(highlightCol = TRUE, highlightRow = TRUE) %>%
-      hot_context_menu(
-        allowRowEdit = FALSE,
-        allowColEdit = FALSE,
-        allowReadOnly = FALSE,
-        allowComments = FALSE,
-        allowCustomBorders = FALSE,
-        
-        customOpts = list()
+      summary_rows(
+        groups = TRUE,
+        columns = c(indicator_target),
+        fns = list(
+          TOTAL = ~sum(.,na.rm = TRUE),
+          AVG = ~mean(.,na.rm = TRUE),
+          MEDIAN = ~median(.,na.rm = TRUE),
+          MIN = ~min(.,na.rm = TRUE),
+          MAX = ~max(.,na.rm = TRUE),
+          G_AVG = ~exp(mean(log(.[.>0])))),
+        formatter = fmt_number
+      ) %>%
+      cols_label(
+        planning_year ="Planning Year",
+        output ="Output",
+        organization ="Organization",
+        indicator_target ="Indicator Target"
+      ) %>%
+      tab_style_body(
+        style = cell_fill(color = "red",alpha = 0.3),
+        values = c(0.00)
+      ) %>%
+      opt_horizontal_padding(scale = 3) %>%
+      opt_stylize(style = 2, color = "green") %>%
+      tab_options(
+        row_group.background.color = "#d3a588",
+        row_group.border.top.color = "#faad4f",
+        row_group.border.bottom.style = "none",
+        table.width = "97%",
+        column_labels.background.color = "#0a6e4f"
       )%>%
-      hot_rows(rowHeights = NULL )
+      opt_all_caps()
+      
   })
   
   observeEvent(
@@ -2668,92 +2672,6 @@ data_c3 -> results
         values$refresh_contributions <-
           !values$refresh_contributions
         values$refresh_indicators <- !values$refresh_indicators
-        
-        show_alert(
-          title = "Successfully Saved Budget Requirements and Contributions",
-          paste0(
-            "Data was successfully saved to Activity Info. Updates will be available to other users."
-          ),
-          type = "success",
-          btn_colors = "#0a6e4f"
-        )
-      }
-    })
-  
-  observeEvent(
-    input$to_db_outputs,
-    {
-      req(auth$result)  # <---- dependency on authentication result
-      #    disable("to_db_outputs")
-      ask_confirmation(
-        inputId = "review_confirmation",
-        title = "Review update",
-        text = paste0(
-          "Please confirm that the specified Budget Plan your organization submit correspond to your appeal for ",
-          p_year,
-          " exercise."
-        ),
-        btn_colors = c("#333333", "#0a6e4f")
-      )
-      
-    })
-  
-  observeEvent(
-    input$review_confirmation,
-    {
-      if (isTRUE(input$review_confirmation))
-      {
-        budget <-
-          (hot_to_r(input$tbl_budget_requirement_sec)) %>% rownames_to_column()
-        glimpse(budget)
-        budget <-  budget %>% rowwise() %>% transmute(
-          active,
-          to_consider,
-          output,
-          total_budget = refugee_budget + resilience_budget,
-          youth_budget,
-          refugee_budget,
-          resilience_budget,
-          id = rowname
-        )
-        glimpse(budget)
-        importTable(
-          formId = budget_planning_form_id,
-          data = budget %>% select(-output),
-          recordIdColumn = "id"
-        )      
-        
-        existing_budget <-
-          (hot_to_r(input$tbl_existing_budget_sec)) %>% rownames_to_column()
-        existing_budget <-
-          existing_budget %>% rowwise() %>% transmute(
-            active,
-            year_of_reception = year,
-            total_contributions = refugee_budget + resilience_budget,
-            refugee_budget,
-            resilience_budget,
-            id  = rowname
-          )
-        glimpse(existing_budget)
-        importTable(formId = budget_py_planning_form_id,
-                    data = existing_budget,
-                    recordIdColumn = "id")
-        
-        indicators <-
-          (hot_to_r(input$tbl_indicators_sec)) %>% rownames_to_column()
-        glimpse(indicators)
-        indicators <-  indicators %>% rowwise() %>% transmute(active,
-                                                              indicator_target ,
-                                                              id  = rowname)
-        
-        importTable(
-          formId = indicator_planning_form_id,
-          data = indicators,
-          recordIdColumn = "id"
-        )
-        
-        values$refresh_sector_lead <- !values$refresh_sector_lead
-
         
         show_alert(
           title = "Successfully Saved Budget Requirements and Contributions",
