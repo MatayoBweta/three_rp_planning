@@ -42,11 +42,10 @@ my_theme <- bs_theme(
   warning = "#FAEB00",
   danger = "#EF4A60",
   primary = "#0a6e4f",
-  secondary = "#30bced"
-  
-) %>%
-  bs_add_variables(# low level theming
-    "font-size-base" = "1rem", )
+  secondary = "#30bced") %>%
+  bs_add_variables(
+    # low level theming
+    "font-size-base" = "1rem")
 
 print(Sys.getenv('ACTIVITY_INFO_UN'))
 
@@ -277,9 +276,7 @@ ui <- fluidPage(
     tags_bottom = tags$div(
       tags$p(
         paste0(
-          "Access to the application is restricted to organizations accepted as 3RP ",
-          p_year,
-          " appealing partners. If you do not have the access credentials, please submit a request for access to the UNHCR point of contact."
+          "Access to the application is restricted to organizations accepted as 3RP ",p_year," appealing partners. If you do not have the access credentials, please submit a request for access to the UNHCR point of contact."
         )
       ),
       tags$p(
@@ -375,12 +372,12 @@ ui <- fluidPage(
         )),
         br(),
         HTML(
-          "<p style=‘text-align:justify’><strong>The following application steps are required to develop the organization&#39;s strategy for the 3RP.</strong> To ensure the effectiveness of the procedure, it would be impetuous to follow the steps as described here.</p>
-<p style=‘text-align:justify’><strong>Select and Update Sectors:&nbsp;</strong>Choose sectors that include the duties your organization will do in 2023</p>
-<p style=‘text-align:justify’><strong>Activate Multi-Year Funds:&nbsp;</strong>If your Multi-Year Funds are used in 2023, Activate the option <strong><em>&quot;Do you already have Multi-Years donor funds in your organization for 2023&quot;</em></strong>.</p>
-<p style=‘text-align:justify’><strong>Select and Update Multi-Year Fund Donors List:&nbsp;</strong>Update the List of Multi-Year Donors who have already contributed to the 2023 budget.</p>
-<p style=‘text-align:justify’><strong>Activate Carry-Over Fund Donors:&nbsp;</strong>If you have to carry over funds from the previous year into 2023, Activate the option&quot;<strong><em> Will the cash given to your organization in previous years by donors be carried over into 2023&quot;.</em></strong></p>
-<p style=‘text-align:justify’><strong>Select and Update Carry Over Fund Donors List:&nbsp;</strong>Update the List of Carry Over Fund Donors who have already contributed to the 2023 budget.</p>
+          paste0("<p style=‘text-align:justify’><strong>The following application steps are required to develop the organization&#39;s strategy for the 3RP.</strong> To ensure the effectiveness of the procedure, it would be impetuous to follow the steps as described here.</p>
+<p style=‘text-align:justify’><strong>Select and Update Sectors:&nbsp;</strong>Choose sectors that include the duties your organization will do in ",p_year,"</p>
+<p style=‘text-align:justify’><strong>Activate Multi-Year Funds:&nbsp;</strong>If your Multi-Year Funds are used in ",p_year,", Activate the option <strong><em>&quot;Do you already have Multi-Years donor funds in your organization for ",p_year,"&quot;</em></strong>.</p>
+<p style=‘text-align:justify’><strong>Select and Update Multi-Year Fund Donors List:&nbsp;</strong>Update the List of Multi-Year Donors who have already contributed to the ",p_year," budget.</p>
+<p style=‘text-align:justify’><strong>Activate Carry-Over Fund Donors:&nbsp;</strong>If you have to carry over funds from the previous year into ",p_year,", Activate the option&quot;<strong><em> Will the cash given to your organization in previous years by donors be carried over into ",p_year,"&quot;.</em></strong></p>
+<p style=‘text-align:justify’><strong>Select and Update Carry Over Fund Donors List:&nbsp;</strong>Update the List of Carry Over Fund Donors who have already contributed to the ",p_year," budget.</p>
 <p style=‘text-align:justify’><strong>Save to Activity Info Budget Plan:&nbsp;</strong>Save the Budget Plan, which consists of Budget Requirements and current contributions totaling $O, to Activity Info for a future update.</p>
 <p style=‘text-align:justify’><strong>Update Budget Requirements:&nbsp;</strong>Update the Data in the Table of Budget Requirements that maintains your Budgetary Requirements in <strong>USD</strong>. Update the Refugee Budget, the Resilience Budget, and the Youth Budget for Budget Requirements; the system will automatically compute the Total Budget Requirement by adding the Refugee Budget and the Resilience Budget. If the Output is irrelevant in the list of given outputs, please deactivate it by changing the Active column from Yes to No; the Active column is a Dropdown field, and you may pick No.</p>
 <p style=‘text-align:justify’><strong>Update Existing Contributions:&nbsp;</strong>Update the Data in the Table <strong>Existing Contributions to</strong> keep your Existing contributions from Donors in USD by donor, sector, and contribution type up-to-date. If an Existing contribution in the provided list is irrelevant, please deactivate it by changing the Active column from Yes to No; the Active column is a dropdown field, and you may choose No. The system will automatically calculate the Total Existing Contributions by adding the Refugee and Resilience contributions.</p>
@@ -390,7 +387,7 @@ ui <- fluidPage(
 <p style=‘text-align:justify’><strong>Save to Activity Info Monitoring Plan:&nbsp;</strong>Save the modified Indicators Targets to Activity Info.</p>
 <p style=‘text-align:justify’><strong>Download in Excel format Monitoring Plan:&nbsp;</strong>Download in Excel format Indicators Targets.</p>
 "
-        ),
+        )),
         h2("Instructions on Focal point selection"),
         fluidRow(column(
           12, tags$style("#project-grid-mailchmp {
