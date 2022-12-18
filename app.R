@@ -29,7 +29,7 @@ library(formattable)
 library(summaryBox)
 library(gt)
 
-p_year <- 2023
+p_year <- Sys.getenv(PLANNING_YEAR)
 
 # Setup the bslib theme object
 my_theme <- bs_theme(
