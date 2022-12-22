@@ -9,11 +9,12 @@
 <br />
 <div align="center">
   <a href="https://rstudio.unhcr.org/iraq/3rp-planning/">
-    <img src="www/01full.png" alt="Logo" width="80" height="80">
+    <img src="www/01full.png" alt="Logo" height="80">
   </a>
+</div>
 
-  <h3 align="center">3RP Data Collection - Agency Planning Tool</h3>
-
+ <h3 align="center">3RP Data Collection - Agency Planning Tool</h3>
+<br />
   <p style=‘text-align:justify’>This platform efficiently handles the 3RP&#39;s information by supplying all the necessary components for the 3RP&#39;s data coordination.</p>
 <p style=‘text-align:justify’>Data coordination is the process of organizing, managing, and distributing data so that it is accurate, consistent, and useable. Effective data coordination is necessary for ensuring that data is accessible, dependable, and valuable and for allowing businesses to maximize their data assets.</p>
 <p style=‘text-align:justify’>This platform provides various crucial data coordination pieces, including:</p>
@@ -24,4 +25,3 @@
 	<li style=‘text-align: justify;’><strong>Data integration</strong>: This involves combining data from different sources, systems, or formats to create a single, cohesive view of the data. All the data produced in the system will be directly registered in Activity Info, and that can facilitate the follow-up and ensure that the data is well integrated with existing systems in place for planning and monitoring.</li>
 </ul>
 <p style=‘text-align:justify’>Data coordination is essential because it helps organizations use and leverage their data assets effectively and make informed, data-driven decisions. Organization, IM, Sector Leads, and Inter-Sectoral coordination groups can access the same dataset during the modifications using this unique tool.</p>
-</div>
