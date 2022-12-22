@@ -29,7 +29,7 @@ library(formattable)
 library(summaryBox)
 library(gt)
 
-p_year <- Sys.getenv(PLANNING_YEAR)
+p_year <- Sys.getenv('PLANNING_YEAR')
 
 # Setup the bslib theme object
 my_theme <- bs_theme(
@@ -45,9 +45,7 @@ my_theme <- bs_theme(
   secondary = "#30bced") %>%
   bs_add_variables(
     # low level theming
-    "font-size-base" = "1rem")
-
-print(Sys.getenv('ACTIVITY_INFO_UN'))
+    "font-size-base" = "0.85rem")
 
 # Let thematic know to update the fonts, too
 thematic_shiny(font = "auto")
@@ -126,18 +124,21 @@ description(rules_budget) <-
 
 rules_contributions <- validator(refugee_budget >=  0,
                                  resilience_budget >=  0,
-                                 year < planning_year)
+                                 year < planning_year,
+                                 !is.na(year))
 names(rules_contributions) <-
   c(
     "refugee_budget_contributions_should_be_more_or_equal_to_0",
     "resilience_budget_contributions_should_be_more_or_equal_to_0",
-    "contribution_year_should_be_before_the_planning_year"
+    "contribution_year_should_be_before_the_planning_year",
+    "contribution_year_should_be_provided"
   )
 description(rules_contributions) <-
   c(
     "Contributions to the refugee budget should be more than or equal to 0.",
     "Contributions to the resilience budget should be more than or equal to 0.",
-    "The year of budget contributions need to come before the year of planning."
+    "The year of budget contributions need to come before the year of planning.",
+    "The year of budget contributions should be provided."
   )
 rules_comparaison <-
   validator(
@@ -230,7 +231,168 @@ present_mistakes <- function(data, rules) {
       ))
     )
   })
-  
+}
+
+present_details_contributions <- function(budget_contributions){
+  budget_contributions %>%
+    fmt_currency(
+      columns = c(refugee_budget, resilience_budget),
+      currency = "USD",
+      decimals = 0
+    ) %>%
+    tab_spanner(
+      label = "Budget contributions amount",
+      columns = c(refugee_budget, resilience_budget)
+    )%>%
+    tab_header(
+      title = md("**SUMMARY OF THE BUDGET CONTRIBUTIONS**"),
+      subtitle = "Provide key informations about each sector budget contributions for the sector lead and co-lead"
+    ) %>%
+    cols_label(
+      planning_year ="Planning Year",
+      sector = "Sector",
+      donors = "Donors",
+      refugee_budget ="Refugee Contributions",
+      resilience_budget ="Resilience contributions",
+    )  %>%
+    sub_missing(
+      columns = 2
+    ) %>%
+    summary_rows(
+      groups = TRUE,
+      columns = c(refugee_budget, resilience_budget),
+      fns = list(
+        TOTAL = ~sum(.,na.rm = TRUE)),
+      formatter = fmt_currency
+    ) %>%
+    grand_summary_rows(
+      columns = c(refugee_budget, resilience_budget),
+      fns = list(
+        GRAND_TOTAL = ~sum(.,na.rm = TRUE)),
+      formatter = fmt_currency
+    ) %>%
+    tab_style_body(
+      style = cell_fill(color = "red",alpha = 0.3),
+      values = c(0.00)
+    ) %>%
+    tab_style_body(
+      style = cell_fill(color = "red",alpha = 0.3),
+      fn = function(x) is.na(x)
+    ) %>%
+    opt_horizontal_padding(scale = 3) %>%
+    opt_stylize(style = 2, color = "green") %>%
+    tab_options(
+      row_group.background.color = "#d3a588",
+      row_group.border.top.color = "#faad4f",
+      row_group.border.bottom.style = "none",
+      table.width = "97%",
+      column_labels.background.color = "#0a6e4f"
+    ) %>% opt_all_caps()
+}
+
+present_details_summary_sector <- function(sector_data_table) {
+  sector_data_table %>%
+    tab_spanner(
+      label = "Outputs",
+      columns = c(number_of_outputs, number_of_outputs_with_budget)
+    ) %>%
+    tab_spanner(
+      label = "Indicators",
+      columns = c(number_of_indicators, number_of_indicators_with_target)
+    )%>%
+    tab_spanner(
+      label = "Requirements",
+      columns = c(youth_budget_plan, refugee_budget_plan, resilience_budget_plan, budget_requirement_plan)
+    ) %>%
+    tab_spanner(
+      label = "Contributions",
+      columns = c(refugee_budget_contributions, resilience_budget_contributions, budget_requirement_contributions)
+    ) %>%
+    fmt_currency(
+      columns = c(youth_budget_plan, refugee_budget_plan, resilience_budget_plan, budget_requirement_plan,refugee_budget_contributions, resilience_budget_contributions, budget_requirement_contributions),
+      currency = "USD",
+      decimals = 0
+    ) %>%
+    tab_header(
+      title = md("**SUMMARY BY SECTOR**"),
+      subtitle = "Provide key informations about each sector covered"
+    ) %>%
+    cols_label(
+      planning_year = "Planning Year",
+      youth_budget_plan = "Youth",
+      refugee_budget_plan = "Refugee",
+      resilience_budget_plan = "Resilience",
+      budget_requirement_plan = "Total",
+      refugee_budget_contributions = "Refugee",
+      resilience_budget_contributions = "Resilience",
+      budget_requirement_contributions = "Total",
+      refugee_budget_contributions = "Refugee",
+      number_of_outputs = html("# of Outputs"),
+      number_of_outputs_with_budget = "Outputs With Budget",
+      number_of_indicators =  html("# of Indicators"),
+      number_of_indicators_with_target =  html("Indicators With Target")
+    )%>%
+    tab_style_body(
+      style = cell_fill(color = "red",alpha = 0.3),
+      values = c(0.00)
+    ) %>%
+    opt_horizontal_padding(scale = 1) %>%
+    opt_stylize(style = 2, color = "green") %>%
+    tab_options(
+      row_group.background.color = "#d3a588",
+      row_group.border.top.color = "#faad4f",
+      row_group.border.bottom.style = "none",
+      table.width = "97%",
+      column_labels.background.color = "#0a6e4f"
+    )%>%
+    opt_all_caps()
+}
+
+
+
+present_details_summary_budget_requirement <- function(budget_requirement_data_table) {
+  budget_requirement_data_table %>%
+    fmt_currency(
+      columns = c(youth_budget, budget_requirement, refugee_budget, resilience_budget),
+      currency = "USD",
+      decimals = 0
+    ) %>%
+    tab_spanner(
+      label = "Budget requirements amount",
+      columns = c(youth_budget, budget_requirement, refugee_budget, resilience_budget)
+    )%>%
+    tab_header(
+      title = md("**SUMMARY OF THE BUDGET REQUIREMENTS**"),
+      subtitle = "Provide key informations about each sector budget requirements for the sector lead and co-lead"
+    ) %>%
+    cols_label(
+      planning_year ="Planning Year",
+      output = "Output",
+      budget_requirement ="Budget Requirement",
+      youth_budget ="Youth Budget",
+      refugee_budget ="Refugee Budget",
+      resilience_budget ="Resilience Budget",
+    ) %>%
+    grand_summary_rows (
+      columns = c(refugee_budget, resilience_budget,budget_requirement,youth_budget),
+      fns = list(
+        G_TOT = ~sum(.,na.rm = TRUE)),
+      formatter = fmt_currency
+    ) %>%
+    tab_style_body(
+      style = cell_fill(color = "red",alpha = 0.3),
+      values = c(0.00)
+    ) %>%
+    opt_horizontal_padding(scale = 3) %>%
+    opt_stylize(style = 2, color = "green") %>%
+    tab_options(
+      row_group.background.color = "#d3a588",
+      row_group.border.top.color = "#faad4f",
+      row_group.border.bottom.style = "none",
+      table.width = "97%",
+      column_labels.background.color = "#0a6e4f"
+    )%>%
+    opt_all_caps()
 }
 
 change_consideration_py <-
@@ -326,9 +488,14 @@ ui <- fluidPage(
             htmlOutput("status_of_sector_lead")
           ),
           column(
-            6,
+            3,
             align = "left",
             actionButton("select_sector_to_see", label = "Select Sector",class="btn btn-primary text-bg-primary")
+          ),
+          column(
+            3,
+            align = "left",
+            actionButton("access_to_is_data", label = "Access Inter Sector Review",class="btn btn-primary text-bg-primary")
           )
         )))
 
@@ -356,7 +523,7 @@ ui <- fluidPage(
         h1("Instructions on Organization Planning"),
         HTML(
           paste0(
-            "<p style=‘text-align:justify’>The<strong> Agency Planning Tool</strong> is designed to assist sector coordinators in collecting inputs from participating agencies on their intended activities and budgets for",
+            "<p style=‘text-align:justify’>The<strong> Agency Planning Tool</strong> is designed to assist sector coordinators in collecting inputs from participating agencies on their intended activities and budgets for ",
             p_year,
             ". The participating agencies should include agencies that are supposed to get their budget directly from donors and not from implementing agencies. The implementing agencies will be reflected through activities if required or during the monitoring phase.</p>
 <p style=‘text-align:justify’><strong><em>Note: </em></strong><em>This tool is not intended for publication; it should be seen as a tool for coordinators to collect inputs. </em></p>
@@ -626,10 +793,15 @@ ui <- fluidPage(
               h4("Changing organization data!",class="alert-heading"),
               p("It is not suggested to update an organization's data using this interface, since doing so may result in data inconsistencies with those already known to the organization that submitted them. Please inform the organization's focal point for any needed modifications, so they can implement them at their level inside the application."),
               hr(),
-              p("In case, you want to update information here, you can extract the data and submit it to UNHCR IM Unit for upload.",class="mb-0")),
+              p("In case, you want to update information here, please contact the organization focal point.",class="mb-0")),
+          h2("Key Figures Summary"),
+          uiOutput("key_figures_summary_sec"),
+          h2("Requirements"),
+          uiOutput("key_figures_budget_requirements_sec"),
+          h2("Contributions"),
+          uiOutput("key_figures_budget_contributions_sec"),
           h2("Budget Requirements Review"),
           gt_output('tbl_budget_requirement_sec'),
-          
           h2("Budget Contributions Review"),
           gt_output('tbl_existing_budget_sec'),
           h2("Indicator Review"),
@@ -644,6 +816,34 @@ ui <- fluidPage(
             )
           )
           
+        ), tabPanel(
+          "Inter-Sector Lead Review",
+          id = "inter_sector_lead_review_tab",
+          value = "inter_sector_lead_review_tab",
+          h1("Inter-Sector Lead Review"),
+          h2("Key Figures Summary"),
+          uiOutput("key_figures_summary_all"),
+          h2("Requirements"),
+          uiOutput("key_figures_budget_requirements_all"),
+          h2("Contributions"),
+          uiOutput("key_figures_budget_contributions_all"),
+          h2("Sector Summary"),
+          gt_output("sector_summary_table_all"),
+          h2("Budget Requirements Review"),
+          gt_output('tbl_budget_requirement_sec_all'),
+          h2("Budget Contributions Review"),
+          gt_output('tbl_existing_budget_sec_all'),
+          h2("Indicator Review"),
+          gt_output('tbl_indicators_sec_all'),
+          br(),
+          fluidRow(
+            column(
+              4,
+              offset = 8,
+              align = "right",
+              downloadButton("to_xlsx_download_review_all", label = "Download")
+            )
+          )
         )
       
     )
@@ -667,6 +867,7 @@ server <- function(input, output, session) {
   values$refresh_dashboard <- TRUE
   values$refresh_quality <- TRUE
   values$refresh_sector_lead <- TRUE
+  values$refresh_is_sector_lead <- TRUE
   
   # authentication module
   auth <- callModule(
@@ -691,6 +892,7 @@ server <- function(input, output, session) {
   values$carry_over_donors_budget_contributions <- 0
   
   output$key_figures_summary <- renderUI({
+    req(auth$result)  # <---- dependency on authentication result
     fluidRow(
       summaryBox(
         "# Of Sectors",
@@ -734,6 +936,7 @@ server <- function(input, output, session) {
   })
   
   output$key_figures_budget_requirements <- renderUI({
+    req(auth$result)  # <---- dependency on authentication result
     fluidRow(
       summaryBox(
       "Budget Requirements",
@@ -760,6 +963,7 @@ server <- function(input, output, session) {
 
   
   output$key_figures_budget_contributions <- renderUI({
+    req(auth$result)  # <---- dependency on authentication result
     fluidRow(
       summaryBox("Existing Contributions",
                values$budget_contributions,
@@ -796,6 +1000,256 @@ server <- function(input, output, session) {
     
   })
 
+  values$number_of_sector_sec <- 0
+  values$number_of_outputs_sec <- 0
+  values$number_of_indicators_sec <- 0
+  values$budget_requirements_sec <- 0
+  values$budget_contributions_sec <- 0
+  values$existing_donors_contributions_sec <- 0
+  values$refugee_budget_requirements_sec <- 0
+  values$refugee_budget_contributions_sec <- 0
+  values$resilience_budget_requirements_sec <- 0
+  values$resilience_budget_contributions_sec <- 0
+  values$multi_year_contributions_sec <- 0
+  values$carry_over_budget_contributions_sec <- 0
+  values$multi_year_donors_contributions_sec <- 0
+  values$carry_over_donors_budget_contributions_sec <- 0
+  
+  output$key_figures_summary_sec <- renderUI({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$main_sector)
+    fluidRow(
+      summaryBox(
+        "# Of Sectors",
+        values$number_of_sector_sec,
+        icon = "fas fa-clipboard-list",
+        width = 2,
+        style = "info"
+      ),summaryBox(
+        "# Of Outputs",
+        values$number_of_outputs_sec,
+        icon = "fas fa-clipboard-list",
+        width = 2,
+        style = "info"
+      ),summaryBox(
+        "# Of Indicators",
+        values$number_of_indicators_sec,
+        icon = "fas fa-clipboard-list",
+        width = 2,
+        style = "info"
+      ),summaryBox(
+        "# of Existing Donors",
+        values$existing_donors_contributions_sec,
+        icon = "fas fa-clipboard-list",
+        width = 2,
+        style = "info"
+      ),summaryBox(
+        "# of Multi-Years Donors",
+        values$multi_year_donors_contributions_sec,
+        icon = "fas fa-clipboard-list",
+        width = 2,
+        style = "success"
+      ),summaryBox(
+        "# of Carry-Over Donors",
+        values$carry_over_donors_budget_contributions_sec,
+        icon = "fas fa-clipboard-list",
+        width = 2,
+        style = "success"
+      )
+    )
+    
+  })
+  
+  output$key_figures_budget_requirements_sec <- renderUI({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$main_sector)
+    fluidRow(
+      summaryBox(
+        "Budget Requirements",
+        values$budget_requirements_sec,
+        icon = "fas fa-dollar-sign",
+        width = 2,
+        style = "info"
+      ),summaryBox(
+        "Refugee",
+        values$refugee_budget_requirements_sec,
+        icon = "fas fa-dollar-sign",
+        width = 2,
+        style = "success"
+      ),  summaryBox(
+        "Resilience",
+        values$resilience_budget_requirements_sec,
+        icon = "fas fa-dollar-sign",
+        width = 2,
+        style = "success"
+      )
+    )
+  })
+  
+  
+  output$key_figures_budget_contributions_sec <- renderUI({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$main_sector)
+    fluidRow(
+      summaryBox("Existing Contributions",
+                 values$budget_contributions_sec,
+                 icon = "fas fa-dollar-sign",
+                 width = 2,
+                 style = "info"
+      ),summaryBox("Refugee",
+                   values$refugee_budget_contributions_sec,
+                   
+                   icon = "fas fa-dollar-sign",
+                   width = 2,
+                   style = "success"
+      ),summaryBox("Resilience",
+                   values$resilience_budget_contributions_sec,
+                   
+                   icon = "fas fa-dollar-sign",
+                   width = 2,
+                   style = "success"
+      ), summaryBox(
+        "Multi-Years",
+        values$multi_year_contributions_sec,
+        icon = "fas fa-dollar-sign",
+        width = 2,
+        style = "success"
+      ),summaryBox(
+        "Carry-Over",
+        values$carry_over_budget_contributions_sec,
+        icon = "fas fa-dollar-sign",
+        width = 2,
+        style = "success"
+      )
+    )
+  })
+  
+  values$number_of_sector_all <- 0
+  values$number_of_outputs_all <- 0
+  values$number_of_indicators_all <- 0
+  values$budget_requirements_all <- 0
+  values$budget_contributions_all <- 0
+  values$existing_donors_contributions_all <- 0
+  values$refugee_budget_requirements_all <- 0
+  values$refugee_budget_contributions_all <- 0
+  values$resilience_budget_requirements_all <- 0
+  values$resilience_budget_contributions_all <- 0
+  values$multi_year_contributions_all <- 0
+  values$carry_over_budget_contributions_all <- 0
+  values$multi_year_donors_contributions_all <- 0
+  values$carry_over_donors_budget_contributions_all <- 0
+  
+  output$key_figures_summary_all <- renderUI({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$is_sector_lead)
+    values$refresh_is_sector_lead
+    fluidRow(
+      summaryBox(
+        "# Of Sectors",
+        values$number_of_sector_all,
+        icon = "fas fa-clipboard-list",
+        width = 2,
+        style = "info"
+      ),summaryBox(
+        "# Of Outputs",
+        values$number_of_outputs_all,
+        icon = "fas fa-clipboard-list",
+        width = 2,
+        style = "info"
+      ),summaryBox(
+        "# Of Indicators",
+        values$number_of_indicators_all,
+        icon = "fas fa-clipboard-list",
+        width = 2,
+        style = "info"
+      ),summaryBox(
+        "# of Existing Donors",
+        values$existing_donors_contributions_all,
+        icon = "fas fa-clipboard-list",
+        width = 2,
+        style = "info"
+      ),summaryBox(
+        "# of Multi-Years Donors",
+        values$multi_year_donors_contributions_all,
+        icon = "fas fa-clipboard-list",
+        width = 2,
+        style = "success"
+      ),summaryBox(
+        "# of Carry-Over Donors",
+        values$carry_over_donors_budget_contributions_all,
+        icon = "fas fa-clipboard-list",
+        width = 2,
+        style = "success"
+      )
+    )
+    
+  })
+  
+  output$key_figures_budget_requirements_all <- renderUI({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$is_sector_lead)
+    values$refresh_is_sector_lead
+    fluidRow(
+      summaryBox(
+        "Budget Requirements",
+        values$budget_requirements_all,
+        icon = "fas fa-dollar-sign",
+        width = 2,
+        style = "info"
+      ),summaryBox(
+        "Refugee",
+        values$refugee_budget_requirements_all,
+        icon = "fas fa-dollar-sign",
+        width = 2,
+        style = "success"
+      ),  summaryBox(
+        "Resilience",
+        values$resilience_budget_requirements_all,
+        icon = "fas fa-dollar-sign",
+        width = 2,
+        style = "success"
+      )
+    )
+  })
+  
+  
+  output$key_figures_budget_contributions_all <- renderUI({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$is_sector_lead)
+    values$refresh_is_sector_lead
+    fluidRow(
+      summaryBox("Existing Contributions",
+                 values$budget_contributions_all,
+                 icon = "fas fa-dollar-sign",
+                 width = 2,
+                 style = "info"
+      ),summaryBox("Refugee",
+                   values$refugee_budget_contributions_all,
+                   
+                   icon = "fas fa-dollar-sign",
+                   width = 2,
+                   style = "success"
+      ),summaryBox("Resilience",
+                   values$resilience_budget_contributions_all,
+                   
+                   icon = "fas fa-dollar-sign",
+                   width = 2,
+                   style = "success"
+      ), summaryBox(
+        "Multi-Years",
+        values$multi_year_contributions_all,
+        icon = "fas fa-dollar-sign",
+        width = 2,
+        style = "success"
+      ),summaryBox(
+        "Carry-Over",
+        values$carry_over_budget_contributions_all,
+        icon = "fas fa-dollar-sign",
+        width = 2,
+        style = "success"
+      )
+    )
+  })
   
   output$status_of_server <- renderUI({
     req(auth$result)  # <---- dependency on authentication result
@@ -921,11 +1375,14 @@ data_c3 -> results
     "Email Coordination Focal Point" = "ctffrmclb0hekc3m",
     "Technical Focal point" = "c88shnvlb0hf0kun",
     "Email Technical Focal Point" = "c5bbxzblb0hfh0go",
+    "Access Token" = "cdjht3flb65abhv2",
     "Deadline" = "css9o0ll264gtj0g",
     "Effective Date" = "cupr3qyl264gcayf",
     "Active" = "cfu2xadlb0dg85md",
     truncate.strings = FALSE
   ) %>% janitor::clean_names()
+  
+  
   
   preselection <-
     steps %>% filter(activity == "07 - Preselection - Planning")
@@ -1001,15 +1458,40 @@ data_c3 -> results
   observeEvent(
     input$ok_sectors_to_monitor,
     {
-     sec_t <-  isolate(values$sector_for_this_lead_sec)
+      sec_t <-  isolate(values$sector_for_this_lead_sec)
       req(auth$result)  # <---- dependency on authentication result
-     c <- sec_t %>% filter(code_name == isolate(input$sectors_to_monitor) & access_token == isolate(input$sectors_to_monitor_token))
+      c <- sec_t %>% filter(code_name == isolate(input$sectors_to_monitor) & access_token == isolate(input$sectors_to_monitor_token))
       if(nrow(c) == 1) {
         values$main_sector <- c
       } else {
         values$main_sector <- sec_t[0, ]
       }
-     removeModal()
+      removeModal()
+    })
+  # Return the UI for a modal dialog with data selection input. If 'failed' is
+  # TRUE, then display a message that the previous value was invalid.
+  dataModal_IS <- function() {
+    modalDialog(
+      title = "ACCESS THE INTER-SECTOR DATA",
+      HTML("<p style='text-align:justify'>To access the full dataset through the inter sector lead tab, please provide its access token. If you do not have the access token, contact the UNHCR IM unit. You may get the details for all datasets if you are part of the Intersectoral working group and deal with the coordination.</p>"),
+      passwordInput("inter_sectors_to_monitor_token", "Provide the Inter-Sector Token:"),
+      
+      footer = tagList(
+        modalButton("Cancel"),
+        actionButton("ok_inter_sectors_to_monitor", "OK")
+      )
+    )
+  }
+  
+  observeEvent(
+    input$ok_inter_sectors_to_monitor,
+    {
+      req(auth$result)  # <---- dependency on authentication result
+      c <- isolate(values$planning) %>% filter(access_token == isolate(input$inter_sectors_to_monitor_token))
+      if(nrow(c) == 1) {
+        values$is_sector_lead <- c
+      }
+      removeModal()
     })
 
   sector_refresh <- reactive({
@@ -1041,9 +1523,6 @@ data_c3 -> results
     disable("select_sector_to_see") 
     values$main_sector <- s[0,]
    } 
-   
-   
-   
   s
     })
   
@@ -1124,10 +1603,9 @@ data_c3 -> results
     
   })
   
-  indicator_target_refresh_sec <- reactive({
+  get_indicator_target_refresh_sec_all <- reactive({
     req(auth$result)  # <---- dependency on authentication result
-    req(values$main_sector)
-    values$refresh_sector_lead
+    values$refresh_is_sector_lead
     queryTable(
       indicator_planning_form_id,
       "id" = "_id",
@@ -1143,7 +1621,14 @@ data_c3 -> results
         "cmtq82flb96gnff1p == 'Yes' && c91mi18lbb6jnxcc == 'Yes'"
       ),
       truncate.strings = FALSE
-    ) %>% janitor::clean_names() %>% filter(sector %in% unique(values$main_sector$code_name))
+    ) %>% janitor::clean_names()
+  })
+  
+  indicator_target_refresh_sec <- reactive({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$main_sector)
+    values$refresh_sector_lead
+    isolate(get_indicator_target_refresh_sec_all()) %>% filter(sector %in% unique(values$main_sector$code_name))
     
   })
   
@@ -1219,10 +1704,9 @@ data_c3 -> results
     
   })
   
-  planning_py_refresh_sec <- reactive({
+  get_planning_py_refresh_sec_all <- reactive({
     req(auth$result)  # <---- dependency on authentication result
-    req(values$main_sector)
-    values$refresh_sector_lead
+    values$refresh_is_sector_lead
     queryTable(
       budget_py_planning_form_id,
       "id" = "_id",
@@ -1240,7 +1724,14 @@ data_c3 -> results
         "crbzchylb4xv6epl == 'Yes' && cdwwtlklbb6ixwc9 == 'Yes'"
       ),
       truncate.strings = FALSE
-    ) %>% janitor::clean_names() %>% filter(sector %in% unique(values$main_sector$code_name))
+    ) %>% janitor::clean_names()
+  })
+  
+  planning_py_refresh_sec <- reactive({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$main_sector)
+    values$refresh_sector_lead
+    isolate(get_planning_py_refresh_sec_all()) %>% filter(sector %in% unique(values$main_sector$code_name))
   })
   
   summary_per_sector <- reactive({
@@ -1280,7 +1771,44 @@ data_c3 -> results
         by = c("planning_year", "sector", "organization")) %>% mutate_if(is.numeric, ~  replace_na(., 0))
     
     summarized_version
+  })
+  
+  summary_per_sector_all <- reactive({
+    req(auth$result)  # <---- dependency on authentication result
+    values$refresh_is_sector_lead
+    b_summary <-
+      isolate(get_planning_refresh_sec_all()) %>% group_by(planning_year, sector, organization) %>% summarize(
+                                                 youth_budget_plan = sum(youth_budget),
+                                                 refugee_budget = sum(refugee_budget),
+                                                 resilience_budget = sum(resilience_budget),
+                                                 budget_requirement_plan = sum(budget_requirement),
+                                                 number_of_outputs = n_distinct(output),
+                                                 number_of_outputs_with_budget = length(unique(output[budget_requirement >0]))
+                                               )
     
+    c_summary <-
+      isolate(get_planning_py_refresh_sec_all()) %>% group_by(planning_year, sector, organization) %>% summarize(
+                                                       refugee_budget = sum(refugee_budget),
+                                                       resilience_budget = sum(resilience_budget)
+                                                     )
+    i_summary <- isolate(get_indicator_target_refresh_sec_all()) %>% group_by(planning_year, sector, organization) %>% summarize(
+                                                                     number_of_indicators = n_distinct(indicator),
+                                                                     number_of_indicators_with_target = length(unique(indicator[indicator_target >0]))
+                                                                   )
+    
+    summarized_version <-
+      b_summary %>% left_join(
+        c_summary,
+        by = c("planning_year", "sector", "organization"),
+        suffix = c("_plan", "_contributions")
+      ) %>% mutate_if(is.numeric, ~  replace_na(., 0)) %>% mutate(budget_requirement_contributions = refugee_budget_contributions + resilience_budget_contributions)
+    
+    summarized_version <-
+      summarized_version %>% left_join(
+        i_summary,
+        by = c("planning_year", "sector", "organization")) %>% mutate_if(is.numeric, ~  replace_na(., 0))
+    
+    summarized_version
   })
   
   planning_refresh <- reactive({
@@ -1351,10 +1879,9 @@ data_c3 -> results
     ) %>% janitor::clean_names()
   })
   
-  planning_refresh_sec <- reactive({
+  get_planning_refresh_sec_all <- reactive({
     req(auth$result)  # <---- dependency on authentication result
-    req(values$main_sector)
-    values$refresh_sector_lead
+    values$refresh_is_sector_lead
     queryTable(
       budget_planning_form_id,
       "id" = "_id",
@@ -1372,7 +1899,14 @@ data_c3 -> results
         "cv6oh41lb3d38yw7 == 'Yes' && c920wa8lbb6gebw7 == 'Yes'"
       ),
       truncate.strings = FALSE
-    ) %>% janitor::clean_names()%>% filter(sector %in% unique(values$main_sector$code_name))
+    ) %>% janitor::clean_names()
+  })
+  
+  planning_refresh_sec <- reactive({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$main_sector)
+    values$refresh_sector_lead
+    isolate(get_planning_refresh_sec_all()) %>% filter(sector %in% unique(values$main_sector$code_name))
   })
   
   budget_py_refresh <- reactive({
@@ -1415,68 +1949,59 @@ data_c3 -> results
                                       to_consider == "Yes"),
       rules_budget
     )
-    
   })
   
-  output$sector_summary_table <-  render_gt({
+  output$sector_summary_table_all <- render_gt({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$is_sector_lead)
+    values$refresh_is_sector_lead
+    dt <- summary_per_sector_all() %>% gt()
+    dt <- present_details_summary_sector(dt) %>%
+      summary_rows(
+        groups = TRUE,
+        columns = c(youth_budget_plan, refugee_budget_plan, resilience_budget_plan, budget_requirement_plan,refugee_budget_contributions, resilience_budget_contributions, budget_requirement_contributions),
+        fns = list(
+          TOT = ~sum(.,na.rm = TRUE)),
+        formatter = fmt_currency
+      ) %>%
+      summary_rows(
+        groups = TRUE,
+        columns = c(number_of_outputs, number_of_outputs_with_budget,number_of_indicators, number_of_indicators_with_target),
+        fns = list(
+          TOT = ~sum(.,na.rm = TRUE)),
+        formatter = fmt_integer
+      ) %>%
+      grand_summary_rows (
+        columns = c(youth_budget_plan, refugee_budget_plan, resilience_budget_plan, budget_requirement_plan,refugee_budget_contributions, resilience_budget_contributions, budget_requirement_contributions),
+        fns = list(
+          G_TOT = ~sum(.,na.rm = TRUE)),
+        formatter = fmt_currency
+      ) %>%
+      grand_summary_rows (
+        columns = c(number_of_outputs, number_of_outputs_with_budget,number_of_indicators, number_of_indicators_with_target),
+        fns = list(
+          G_TOT = ~sum(.,na.rm = TRUE)),
+        formatter = fmt_integer
+      )
+  })
+  
+  output$sector_summary_table <- render_gt({
     req(auth$result)  # <---- dependency on authentication result
     values$refresh_dashboard
-    dt <- summary_per_sector() %>%
-      gt() %>%
-      cols_hide(columns = c(organization, planning_year)) %>%
-      tab_spanner(
-        label = "Outputs",
-        columns = c(number_of_outputs, number_of_outputs_with_budget)
-      ) %>%
-      tab_spanner(
-        label = "Indicators",
-        columns = c(number_of_indicators, number_of_indicators_with_target)
-      )%>%
-      tab_spanner(
-        label = "Requirements",
-        columns = c(youth_budget_plan, refugee_budget_plan, resilience_budget_plan, budget_requirement_plan)
-      ) %>%
-      tab_spanner(
-        label = "Contributions",
-        columns = c(refugee_budget_contributions, resilience_budget_contributions, budget_requirement_contributions)
-      ) %>%
-      fmt_currency(
+    dt <- summary_per_sector() %>% gt()
+    dt <- present_details_summary_sector(dt) %>%
+      grand_summary_rows (
         columns = c(youth_budget_plan, refugee_budget_plan, resilience_budget_plan, budget_requirement_plan,refugee_budget_contributions, resilience_budget_contributions, budget_requirement_contributions),
-        currency = "USD",
-        decimals = 0
+        fns = list(
+          G_TOT = ~sum(.,na.rm = TRUE)),
+        formatter = fmt_currency
       ) %>%
-      tab_header(
-        title = md("**SUMMARY BY SECTOR**"),
-        subtitle = "Provide key informations about each sector covered"
-      ) %>%
-      cols_label(
-        youth_budget_plan = "Youth",
-        refugee_budget_plan = "Refugee",
-        resilience_budget_plan = "Resilience",
-        budget_requirement_plan = "Total",
-        refugee_budget_contributions = "Refugee",
-        resilience_budget_contributions = "Resilience",
-        budget_requirement_contributions = "Total",
-        refugee_budget_contributions = "Refugee",
-        number_of_outputs = html("# of Outputs"),
-        number_of_outputs_with_budget = "Outputs With Budget",
-        number_of_indicators =  html("# of Indicators"),
-        number_of_indicators_with_target =  html("Indicators With Target")
-      )%>%
-      tab_style_body(
-        style = cell_fill(color = "red",alpha = 0.3),
-        values = c(0.00)
-      ) %>%
-      opt_horizontal_padding(scale = 3) %>%
-      opt_stylize(style = 2, color = "green") %>%
-      tab_options(
-        row_group.background.color = "#d3a588",
-        row_group.border.top.color = "#faad4f",
-        row_group.border.bottom.style = "none",
-        table.width = "97%",
-        column_labels.background.color = "#0a6e4f"
-      )%>%
-      opt_all_caps()
+      grand_summary_rows (
+        columns = c(number_of_outputs, number_of_outputs_with_budget,number_of_indicators, number_of_indicators_with_target),
+        fns = list(
+          G_TOT = ~sum(.,na.rm = TRUE)),
+        formatter = fmt_number
+      )
 })
   
   output$budget_comparaison_data_quality <- renderUI({
@@ -1658,6 +2183,229 @@ data_c3 -> results
                          value = nrow(data_planning_co) > 0)
   })
   
+  observe({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$main_sector)
+    values$refresh_sector_lead
+
+    planning_data <-
+      isolate(planning_refresh_sec()) %>% filter(to_consider == "Yes")
+    
+    planning_py <-
+      isolate(planning_py_refresh_sec()) %>% filter(to_consider == "Yes")
+    
+    data_planning_my <-
+      planning_py %>% filter(budget_type == "Multi-Year")
+    data_planning_co <-
+      planning_py %>% filter(budget_type == "Carry-Over")
+    
+    planning_data_ <- planning_data %>% filter(active == "Yes")
+    planning_py_ <- planning_py %>% filter(active == "Yes")
+    data_planning_my_ <-
+      data_planning_my %>% filter(active == "Yes")
+    data_planning_co_ <-
+      data_planning_co %>% filter(active == "Yes")
+    indicator_target_ <-
+      isolate(indicator_target_refresh_sec()) %>% filter(to_consider == "Yes" &
+                                                       active == "Yes")
+    
+    number_of_sector <- length(unique(planning_data_$sector))
+    number_of_outputs <- length(unique(planning_data_$output))
+    number_of_indicators <-
+      length(unique(indicator_target_$indicator))
+    budget_requirements <-
+      sum(
+        planning_data_$refugee_budget + planning_data_$resilience_budget,
+        na.rm = TRUE
+      )
+    budget_contributions <-
+      sum(
+        planning_py_$refugee_budget + planning_py_$resilience_budget,
+        na.rm = TRUE
+      )
+    existing_donors_contributions <-
+      length(unique(planning_py_$donors))
+    refugee_budget_requirements <-
+      sum(planning_data_$refugee_budget, na.rm = TRUE)
+    refugee_budget_contributions <-
+      sum(planning_py_$refugee_budget, na.rm = TRUE)
+    resilience_budget_requirements <-
+      sum(planning_data_$resilience_budget, na.rm = TRUE)
+    resilience_budget_contributions <-
+      sum(planning_py_$resilience_budget, na.rm = TRUE)
+    multi_year_contributions <-
+      sum(
+        data_planning_my_$refugee_budget + data_planning_my_$resilience_budget,
+        na.rm = TRUE
+      )
+    carry_over_budget_contributions <-
+      sum(
+        data_planning_co_$refugee_budget + data_planning_co_$resilience_budget,
+        na.rm = TRUE
+      )
+    multi_year_donors_contributions <-
+      length(unique(data_planning_my_$donors))
+    carry_over_donors_budget_contributions <-
+      length(unique(data_planning_co_$donors))
+    
+    values$number_of_sector_sec <-
+      prettyNum(number_of_sector,
+                big.mark = ",",
+                scientific = FALSE)
+    values$number_of_outputs_sec <-
+      prettyNum(number_of_outputs,
+                big.mark = ",",
+                scientific = FALSE)
+    values$number_of_indicators_sec <-
+      prettyNum(number_of_indicators,
+                big.mark = ",",
+                scientific = FALSE)
+    
+    values$budget_requirements_sec <-
+      formattable::currency(budget_requirements, digits = 0L)
+    values$budget_contributions_sec <-
+      formattable::currency(budget_contributions, digits = 0L)
+    values$existing_donors_contributions_sec <-
+      prettyNum(existing_donors_contributions,
+                big.mark = ",",
+                scientific = FALSE)
+    values$refugee_budget_requirements_sec <-
+      formattable::currency(refugee_budget_requirements, digits = 0L)
+    values$refugee_budget_contributions_sec <-
+      formattable::currency(refugee_budget_contributions, digits = 0L)
+    values$resilience_budget_requirements_sec <-
+      formattable::currency(resilience_budget_requirements, digits = 0L)
+    values$resilience_budget_contributions_sec <-
+      formattable::currency(resilience_budget_contributions, digits = 0L)
+    values$multi_year_contributions_sec <-
+      formattable::currency(multi_year_contributions, digits = 0L)
+    values$carry_over_budget_contributions_sec <-
+      formattable::currency(carry_over_budget_contributions, digits = 0L)
+    
+    values$multi_year_donors_contributions_sec <-
+      prettyNum(multi_year_donors_contributions,
+                big.mark = ",",
+                scientific = FALSE)
+    values$carry_over_donors_budget_contributions_sec <-
+      prettyNum(
+        carry_over_donors_budget_contributions,
+        big.mark = ",",
+        scientific = FALSE
+      )
+    
+  })
+  
+  observe({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$is_sector_lead)
+    # To close the door
+    values$refresh_is_sector_lead
+    
+    planning_data <-
+      isolate(get_planning_refresh_sec_all()) %>% filter(to_consider == "Yes")
+    
+    planning_py <-
+      isolate(get_planning_py_refresh_sec_all()) %>% filter(to_consider == "Yes")
+    
+    data_planning_my <-
+      planning_py %>% filter(budget_type == "Multi-Year")
+    data_planning_co <-
+      planning_py %>% filter(budget_type == "Carry-Over")
+    
+    planning_data_ <- planning_data %>% filter(active == "Yes")
+    planning_py_ <- planning_py %>% filter(active == "Yes")
+    data_planning_my_ <-
+      data_planning_my %>% filter(active == "Yes")
+    data_planning_co_ <-
+      data_planning_co %>% filter(active == "Yes")
+    indicator_target_ <-
+      isolate(get_indicator_target_refresh_sec_all()) %>% filter(to_consider == "Yes" &
+                                                           active == "Yes")
+    
+    number_of_sector <- length(unique(planning_data_$sector))
+    number_of_outputs <- length(unique(planning_data_$output))
+    number_of_indicators <-
+      length(unique(indicator_target_$indicator))
+    budget_requirements <-
+      sum(
+        planning_data_$refugee_budget + planning_data_$resilience_budget,
+        na.rm = TRUE
+      )
+    budget_contributions <-
+      sum(
+        planning_py_$refugee_budget + planning_py_$resilience_budget,
+        na.rm = TRUE
+      )
+    existing_donors_contributions <-
+      length(unique(planning_py_$donors))
+    refugee_budget_requirements <-
+      sum(planning_data_$refugee_budget, na.rm = TRUE)
+    refugee_budget_contributions <-
+      sum(planning_py_$refugee_budget, na.rm = TRUE)
+    resilience_budget_requirements <-
+      sum(planning_data_$resilience_budget, na.rm = TRUE)
+    resilience_budget_contributions <-
+      sum(planning_py_$resilience_budget, na.rm = TRUE)
+    multi_year_contributions <-
+      sum(
+        data_planning_my_$refugee_budget + data_planning_my_$resilience_budget,
+        na.rm = TRUE
+      )
+    carry_over_budget_contributions <-
+      sum(
+        data_planning_co_$refugee_budget + data_planning_co_$resilience_budget,
+        na.rm = TRUE
+      )
+    multi_year_donors_contributions <-
+      length(unique(data_planning_my_$donors))
+    carry_over_donors_budget_contributions <-
+      length(unique(data_planning_co_$donors))
+    
+    values$number_of_sector_all <-
+      prettyNum(number_of_sector,
+                big.mark = ",",
+                scientific = FALSE)
+    values$number_of_outputs_all <-
+      prettyNum(number_of_outputs,
+                big.mark = ",",
+                scientific = FALSE)
+    values$number_of_indicators_all <-
+      prettyNum(number_of_indicators,
+                big.mark = ",",
+                scientific = FALSE)
+    
+    values$budget_requirements_all <-
+      formattable::currency(budget_requirements, digits = 0L)
+    values$budget_contributions_all <-
+      formattable::currency(budget_contributions, digits = 0L)
+    values$existing_donors_contributions_all <-
+      prettyNum(existing_donors_contributions,
+                big.mark = ",",
+                scientific = FALSE)
+    values$refugee_budget_requirements_all <-
+      formattable::currency(refugee_budget_requirements, digits = 0L)
+    values$refugee_budget_contributions_all <-
+      formattable::currency(refugee_budget_contributions, digits = 0L)
+    values$resilience_budget_requirements_all <-
+      formattable::currency(resilience_budget_requirements, digits = 0L)
+    values$resilience_budget_contributions_all <-
+      formattable::currency(resilience_budget_contributions, digits = 0L)
+    values$multi_year_contributions_all <-
+      formattable::currency(multi_year_contributions, digits = 0L)
+    values$carry_over_budget_contributions_all <-
+      formattable::currency(carry_over_budget_contributions, digits = 0L)
+    
+    values$multi_year_donors_contributions_all <-
+      prettyNum(multi_year_donors_contributions,
+                big.mark = ",",
+                scientific = FALSE)
+    values$carry_over_donors_budget_contributions_all <-
+      prettyNum(
+        carry_over_donors_budget_contributions,
+        big.mark = ",",
+        scientific = FALSE
+      )
+  })
   
   observeEvent(
     input$to_db_apply,
@@ -1680,7 +2428,6 @@ data_c3 -> results
     {
       req(auth$result)  # <---- dependency on authentication result
       values$refresh_dashboard <- !values$refresh_dashboard
-      
     })
   
   observeEvent(
@@ -1689,7 +2436,12 @@ data_c3 -> results
       if(values$sector_lead) {
         showModal(dataModal(unique(values$sector_for_this_lead_sec$code_name)))
       }
-      
+    })
+  
+  observeEvent(
+    input$access_to_is_data,
+    {
+      showModal(dataModal_IS())
     })
   
   observeEvent(
@@ -1698,7 +2450,6 @@ data_c3 -> results
       req(auth$result)  # <---- dependency on authentication result
       req(values$main_sector)
       values$refresh_sector_lead <- !values$refresh_sector_lead
-      
     })
   
   observeEvent(
@@ -1706,7 +2457,6 @@ data_c3 -> results
     {
       req(auth$result)  # <---- dependency on authentication result
       values$refresh_quality <- !values$refresh_quality
-      
     })
 
   observeEvent(
@@ -2219,58 +2969,36 @@ data_c3 -> results
   })
   
   output$tbl_budget_requirement_sec = render_gt({
-    planning_refresh_sec() %>% remove_rownames %>% column_to_rownames(var = "id") %>%
+   dt <- planning_refresh_sec() %>% remove_rownames %>% column_to_rownames(var = "id") %>%
       group_by(organization) %>%
       gt() %>%
-      cols_hide(columns = c(sector,to_consider,active)) %>%
-      fmt_currency(
-        columns = c(youth_budget, budget_requirement, refugee_budget, resilience_budget),
-        currency = "USD",
-        decimals = 0
-      ) %>%
-      tab_spanner(
-        label = "Budget requirements amount",
-        columns = c(youth_budget, budget_requirement, refugee_budget, resilience_budget)
-      )%>%
-      tab_header(
-        title = md("**SUMMARY OF THE BUDGET REQUIREMENTS**"),
-        subtitle = "Provide key informations about each sector budget requirements for the sector lead and co-lead"
-      ) %>%
-      cols_label(
-        planning_year ="Planning Year",
-        output = "Output",
-        budget_requirement ="Budget Requirement",
-        youth_budget ="Youth Budget",
-        refugee_budget ="Refugee Budget",
-        resilience_budget ="Resilience Budget",
-        ) %>%
+      cols_hide(columns = c(sector,to_consider,active))
+      dt <- present_details_summary_budget_requirement(dt)  %>%
+        summary_rows(
+          groups = TRUE,
+          columns = c(refugee_budget, resilience_budget,budget_requirement,youth_budget),
+          fns = list(
+            TOTAL = ~sum(.,na.rm = TRUE)),
+          formatter = fmt_currency
+        ) 
+  })
+  
+  output$tbl_budget_requirement_sec_all = render_gt({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$is_sector_lead)
+    values$refresh_is_sector_lead
+    dt <- get_planning_refresh_sec_all() %>% remove_rownames %>% column_to_rownames(var = "id") %>%
+      group_by(organization,sector) %>%
+      gt() %>%
+      cols_hide(columns = c(to_consider,active))
+    dt <- present_details_summary_budget_requirement(dt)  %>%
       summary_rows(
         groups = TRUE,
         columns = c(refugee_budget, resilience_budget,budget_requirement,youth_budget),
         fns = list(
-          TOTAL = ~sum(.,na.rm = TRUE)),
+          TOT = ~sum(.,na.rm = TRUE)),
         formatter = fmt_currency
-      ) %>%
-      grand_summary_rows (
-        columns = c(refugee_budget, resilience_budget,budget_requirement,youth_budget),
-        fns = list(
-          GRAND_TOTAL = ~sum(.,na.rm = TRUE)),
-        formatter = fmt_currency
-      ) %>%
-      tab_style_body(
-        style = cell_fill(color = "red",alpha = 0.3),
-        values = c(0.00)
-      ) %>%
-      opt_horizontal_padding(scale = 3) %>%
-      opt_stylize(style = 2, color = "green") %>%
-      tab_options(
-        row_group.background.color = "#d3a588",
-        row_group.border.top.color = "#faad4f",
-        row_group.border.bottom.style = "none",
-        table.width = "97%",
-        column_labels.background.color = "#0a6e4f"
-      )%>%
-      opt_all_caps()
+      ) 
   })
   
   output$tbl_existing_budget = renderRHandsontable({
@@ -2345,67 +3073,33 @@ data_c3 -> results
   })
   
   output$tbl_existing_budget_sec = render_gt({
-    planning_py_refresh_sec() %>% remove_rownames %>% column_to_rownames(var = "id") %>%
+   dt <- planning_py_refresh_sec() %>% remove_rownames %>% column_to_rownames(var = "id") %>%
       mutate(org_budget_type = paste0(organization," ",budget_type)) %>%
       group_by(org_budget_type) %>%
-      gt() %>%
-      cols_hide(columns = c(sector,to_consider,active,budget_type,organization)) %>%
-      fmt_currency(
-        columns = c(refugee_budget, resilience_budget),
-        currency = "USD",
-        decimals = 0
-      ) %>%
-      tab_spanner(
-        label = "Budget contributions amount",
-        columns = c(refugee_budget, resilience_budget)
-      )%>%
-      tab_header(
-        title = md("**SUMMARY OF THE BUDGET CONTRIBUTIONS**"),
-        subtitle = "Provide key informations about each sector budget contributions for the sector lead and co-lead"
-      ) %>%
-      cols_label(
-        planning_year ="Planning Year",
-        donors = "Donors",
-        refugee_budget ="Refugee Contributions",
-        resilience_budget ="Resilience contributions",
-      )  %>%
-      sub_missing(
-        columns = 2
-      ) %>%
-      summary_rows(
-        groups = TRUE,
-        columns = c(refugee_budget, resilience_budget),
-        fns = list(
-          TOTAL = ~sum(.,na.rm = TRUE)),
-        formatter = fmt_currency
-      ) %>%
-      grand_summary_rows(
-        columns = c(refugee_budget, resilience_budget),
-        fns = list(
-          GRAND_TOTAL = ~sum(.,na.rm = TRUE)),
-        formatter = fmt_currency
-      ) %>%
-      tab_style_body(
-        style = cell_fill(color = "red",alpha = 0.3),
-        values = c(0.00)
-      ) %>%
-      tab_style_body(
-        style = cell_fill(color = "red",alpha = 0.3),
-        fn = function(x) is.na(x)
-      ) %>%
-      opt_horizontal_padding(scale = 3) %>%
-      opt_stylize(style = 2, color = "green") %>%
-      tab_options(
-        row_group.background.color = "#d3a588",
-        row_group.border.top.color = "#faad4f",
-        row_group.border.bottom.style = "none",
-        table.width = "97%",
-        column_labels.background.color = "#0a6e4f"
-      ) %>%
-      opt_all_caps()
+      gt() 
+    
+    dt <- present_details_contributions(dt)
+    
+   dt %>%
+      cols_hide(columns = c(sector,to_consider,active,budget_type,organization))
     
   })
   
+  output$tbl_existing_budget_sec_all = render_gt({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$is_sector_lead)
+    values$refresh_is_sector_lead
+    dt <- get_planning_py_refresh_sec_all() %>% remove_rownames %>% column_to_rownames(var = "id") %>%
+      mutate(org_budget_type = paste0(organization," ",budget_type)) %>%
+      group_by(org_budget_type) %>%
+      gt() 
+    
+    dt <- present_details_contributions(dt)
+    
+    dt %>%
+      cols_hide(columns = c(to_consider,active,budget_type,organization))
+    
+  })
   output$tbl_indicators = renderRHandsontable({
     rhandsontable(
       indicator_target_refresh() %>% filter(to_consider == "Yes") %>% remove_rownames %>% column_to_rownames(var = "id"),
@@ -2472,7 +3166,7 @@ data_c3 -> results
       indicator_target_refresh_sec() %>% remove_rownames %>% column_to_rownames(var = "id") %>%
       group_by(indicator) %>%
       gt() %>%
-      cols_hide(columns = c(sector,to_consider,active)) %>%
+      cols_hide(columns = c(to_consider,active)) %>%
       tab_spanner(
         label = "INDICATOR DETAILS",
         columns = c(organization,indicator_target)
@@ -2501,6 +3195,7 @@ data_c3 -> results
       ) %>%
       cols_label(
         planning_year ="Planning Year",
+        sector = "Sector",
         output ="Output",
         organization ="Organization",
         indicator_target ="Indicator Target"
@@ -2520,6 +3215,69 @@ data_c3 -> results
       )%>%
       opt_all_caps()
       
+  })
+  
+  output$tbl_indicators_sec_all = render_gt({
+    req(auth$result)  # <---- dependency on authentication result
+    req(values$is_sector_lead)
+    values$refresh_is_sector_lead
+    t <- get_indicator_target_refresh_sec_all()
+
+    t %>% remove_rownames %>% column_to_rownames(var = "id") %>%
+      group_by(indicator) %>%
+      gt() %>%
+      cols_hide(columns = c(to_consider,active)) %>%
+      tab_spanner(
+        label = "INDICATOR DETAILS",
+        columns = c(organization,indicator_target)
+      ) %>% fmt_number(
+        columns = indicator_target,
+        decimals = 0
+      ) %>%
+      tab_header(
+        title = md("**SUMMARY OF THE INDICATORS TARGET**"),
+        subtitle = "Provide key informations about each indicator target for the sector lead and co-lead"
+      ) %>% cols_move(
+        columns = output,
+        after = sector
+      ) %>% cols_move(
+        columns = sector,
+        after = planning_year
+      ) %>%
+      summary_rows(
+        groups = TRUE,
+        columns = c(indicator_target),
+        fns = list(
+          TOTAL = ~sum(.,na.rm = TRUE),
+          AVG = ~mean(.,na.rm = TRUE),
+          MEDIAN = ~median(.,na.rm = TRUE),
+          MIN = ~min(.,na.rm = TRUE),
+          MAX = ~max(.,na.rm = TRUE),
+          G_AVG = ~exp(mean(log(.[.>0])))),
+        formatter = fmt_number
+      ) %>%
+      cols_label(
+        planning_year ="Planning Year",
+        sector = "Sector",
+        output ="Output",
+        organization ="Organization",
+        indicator_target ="Indicator Target"
+      ) %>%
+      tab_style_body(
+        style = cell_fill(color = "red",alpha = 0.3),
+        values = c(0.00)
+      ) %>%
+      opt_horizontal_padding(scale = 3) %>%
+      opt_stylize(style = 2, color = "green") %>%
+      tab_options(
+        row_group.background.color = "#d3a588",
+        row_group.border.top.color = "#faad4f",
+        row_group.border.bottom.style = "none",
+        table.width = "97%",
+        column_labels.background.color = "#0a6e4f"
+      )%>%
+      opt_all_caps()
+    
   })
   
   observeEvent(
@@ -2783,17 +3541,20 @@ data_c3 -> results
     content = function(file)
     {
       budget <-
-        (hot_to_r(input$tbl_budget_requirement_sec)) %>% rownames_to_column()
+        isolate(planning_refresh_sec())  %>% filter(active == "Yes" &
+                                            to_consider == "Yes")
       
       glimpse(budget)
       
       existing_budget <-
-        (hot_to_r(input$tbl_existing_budget_sec)) %>% rownames_to_column()
+      isolate(planning_py_refresh_sec()) %>% filter(active == "Yes" &
+                                               to_consider == "Yes")
       
       glimpse(existing_budget)
       
       indicator_values <-
-        (hot_to_r(input$tbl_indicators_sec)) %>% rownames_to_column()
+      isolate(indicator_target_refresh_sec()) %>% filter(active == "Yes" &
+                                                     to_consider == "Yes")
       
       glimpse(indicator_values)
       
@@ -2802,6 +3563,7 @@ data_c3 -> results
       addWorksheet(wb, "SECTOR_BUDGET_REQUIREMENTS")
       addWorksheet(wb, "SECTOR_BUDGET_CONTRIBUTIONS")
       addWorksheet(wb, "SECTOR_INDICATORS")
+    
       writeDataTable(
         wb,
         "SECTOR_BUDGET_REQUIREMENTS",
@@ -2825,6 +3587,66 @@ data_c3 -> results
         rowNames = TRUE,
         keepNA = FALSE,
         tableName =  "SECTOR_INDICATORS"
+      )
+      saveWorkbook(wb, file, overwrite = TRUE)
+    }
+  )
+  
+  output$to_xlsx_download_review_all <- downloadHandler(
+    filename = function()
+    {
+      paste0("ALL-PLANNING-DATA",
+             format(Sys.time(), "%Y-%m-%d-%h-%m-%s"),
+             ".xlsx")
+    },
+    content = function(file)
+    {
+      budget <-
+       isolate(get_planning_refresh_sec_all())  %>% filter(active == "Yes" &
+                                            to_consider == "Yes")
+      
+      glimpse(budget)
+      
+      existing_budget <-
+       isolate(get_planning_py_refresh_sec_all())  %>% filter(active == "Yes" &
+                                               to_consider == "Yes")
+      
+      glimpse(existing_budget)
+      
+      indicator_values <-
+       isolate(get_indicator_target_refresh_sec_all()) %>% filter(active == "Yes" &
+                                                     to_consider == "Yes")
+      
+      glimpse(indicator_values)
+      
+      wb <- createWorkbook()
+      addCreator(wb, "3RP Data Collection - Agency Planning Tool")
+      addWorksheet(wb, "ALL_BUDGET_REQUIREMENTS")
+      addWorksheet(wb, "ALL_BUDGET_CONTRIBUTIONS")
+      addWorksheet(wb, "ALL_INDICATORS")
+      writeDataTable(
+        wb,
+        "ALL_BUDGET_REQUIREMENTS",
+        budget,
+        rowNames = TRUE,
+        keepNA = FALSE,
+        tableName =  "ALL_BUDGET_REQUIREMENTS"
+      )
+      writeDataTable(
+        wb,
+        "ALL_BUDGET_CONTRIBUTIONS",
+        existing_budget,
+        rowNames = TRUE,
+        keepNA = FALSE,
+        tableName =  "ALL_BUDGET_CONTRIBUTIONS"
+      )
+      writeDataTable(
+        wb,
+        "ALL_INDICATORS",
+        indicator_values,
+        rowNames = TRUE,
+        keepNA = FALSE,
+        tableName =  "ALL_INDICATORS"
       )
       saveWorkbook(wb, file, overwrite = TRUE)
     }
