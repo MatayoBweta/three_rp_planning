@@ -3,4 +3,5 @@
 .RData
 .Ruserdata
 .Renviron
+.dcf
 rsconnect/
