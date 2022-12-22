@@ -55,21 +55,35 @@ activityInfoLogin(Sys.getenv('ACTIVITY_INFO_UN'),
 
 organization_form_id <- "cajkf0zlal21i30nyy"
 
+# organization_first <- queryTable(
+#   organization_form_id,
+#   "id" = "_id",
+#   "Code Name" = "c5ytxhyks7s2ygds",
+#   "Acronym" = "cmguuq9ks78tw006",
+#   "Code" = "c2lrasyks78sxm75",
+#   "Access Token" = "czc76vylb16btf31c",
+#   "Name" = "co30eh7ks78upg57",
+#   "Appealing" = "cd6kakml733j7ga7",
+#   filter = "cd6kakml733j7ga7 == 'Yes'",
+#   "Active" = "comzfppks7rsqhvb",
+#   truncate.strings = FALSE
+# ) %>% janitor::clean_names() %>% filter(appealing == "Yes" &
+#                                           active == "Yes") %>% remove_rownames %>% column_to_rownames(var = "id")
+
 organization_first <- queryTable(
   organization_form_id,
   "id" = "_id",
-  "Code Name" = "c5ytxhyks7s2ygds",
-  "Acronym" = "cmguuq9ks78tw006",
-  "Code" = "c2lrasyks78sxm75",
-  "Access Token" = "czc76vylb16btf31c",
-  "Name" = "co30eh7ks78upg57",
-  "Appealing" = "cd6kakml733j7ga7",
-  filter = "cd6kakml733j7ga7 == 'Yes'",
-  "Active" = "comzfppks7rsqhvb",
+  "Code Name" = "code_name",
+  "Acronym" = "acronym",
+  "Code" = "code",
+  "Access Token" = "access_token",
+  "Name" = "name",
+  "Appealing" = "appealing",
+  filter = "appealing == 'Yes'",
+  "Active" = "active",
   truncate.strings = FALSE
 ) %>% janitor::clean_names() %>% filter(appealing == "Yes" &
                                           active == "Yes") %>% remove_rownames %>% column_to_rownames(var = "id")
-
 
 
 # define some credentials
@@ -591,7 +605,6 @@ ui <- fluidPage(
 	</ul>
 	</li>
 </ul>
-
 <blockquote>
 <p><strong>Note:</strong> Any subscriber who is no longer functioning in the Iraq operation can easily unsubscribe through a click under each email sent through MailChimp.</p>
 </blockquote>"
@@ -1284,9 +1297,7 @@ server <- function(input, output, session) {
   output$step_by_step <- DiagrammeR::renderGrViz({
     grViz(
       "digraph {
-
 graph [layout = dot, label='STEP BY STEP ORGANIZATION PLANNING PROCESS',fontname='Lato,Arial,sans-serif']
-
 # define the global styles of the nodes. We can override these in box if we wish
 node [shape = rectangle, style = filled, fillcolor = '#333333', fontcolor= White]
 data0 [label = 'Organization']
@@ -1306,7 +1317,6 @@ results [label= 'Results' , shape = folder, fillcolor = '#f26147']
 data_c1 [label =  'Data Summary', shape = folder, fillcolor = '#f26147', fontcolor= White]
 data_c2 [label =  'Data Quality', shape = folder, fillcolor = '#f26147', fontcolor= White]
 data_c3 [label =  'Data Integration', shape = folder, fillcolor = '#f26147', fontcolor= White]
-
 subgraph cluster4 {
 rank = same; 
 subgraph cluster0 {
@@ -1318,7 +1328,6 @@ rank = same; data5; data6; label = 'Budgeting Data';
 process;
 label = 'Planning Requirements';
 }
-
 subgraph cluster2 {
 rank = same; process_com1; process_com2; process_com3;label = 'Consolidation and Validation';
 }
@@ -1328,10 +1337,8 @@ rank = same; data7;label = 'Indicators Targets';
 subgraph cluster5 {
 rank = same; data_c1; data_c2; data_c3; label = 'Data Capabilities';
 }
-
 # edge definitions with the node IDs
 data0 -> data1 -> {data2 data3}  -> process -> {data5 data6}
-
 data5 -> process_br
 process_com1 -> process_com2 -> process_com3 -> results
 data0 -> data4
@@ -1367,21 +1374,35 @@ data_c3 -> results
   
   disable("to_db_apply")
   
-  steps <- queryTable(
+  # steps <- queryTable(
+  #   "ckh1tqxlal21i30ny5",
+  #   "Activity" = "cg690tnl264eh90d.cfs6pvcl2643ezn5",
+  #   "Quarter" = "ct0nl2zl264h881m",
+  #   "Coordination Focal point" = "c2nw0ujlb0he6zcl",
+  #   "Email Coordination Focal Point" = "ctffrmclb0hekc3m",
+  #   "Technical Focal point" = "c88shnvlb0hf0kun",
+  #   "Email Technical Focal Point" = "c5bbxzblb0hfh0go",
+  #   "Access Token" = "cdjht3flb65abhv2",
+  #   "Deadline" = "css9o0ll264gtj0g",
+  #   "Effective Date" = "cupr3qyl264gcayf",
+  #   "Active" = "cfu2xadlb0dg85md",
+  #   truncate.strings = FALSE
+  # ) %>% janitor::clean_names()
+  
+    steps <- queryTable(
     "ckh1tqxlal21i30ny5",
-    "Activity" = "cg690tnl264eh90d.cfs6pvcl2643ezn5",
-    "Quarter" = "ct0nl2zl264h881m",
-    "Coordination Focal point" = "c2nw0ujlb0he6zcl",
-    "Email Coordination Focal Point" = "ctffrmclb0hekc3m",
-    "Technical Focal point" = "c88shnvlb0hf0kun",
-    "Email Technical Focal Point" = "c5bbxzblb0hfh0go",
-    "Access Token" = "cdjht3flb65abhv2",
-    "Deadline" = "css9o0ll264gtj0g",
-    "Effective Date" = "cupr3qyl264gcayf",
-    "Active" = "cfu2xadlb0dg85md",
+    "Activity" = "activity",
+    "Quarter" = "quarter",
+    "Coordination Focal point" = "focal_point",
+    "Email Coordination Focal Point" = "email_coord_focal_point",
+    "Technical Focal point" = "technical_focal_point",
+    "Email Technical Focal Point" = "email_tc_focal_point",
+    "Access Token" = "access_token",
+    "Deadline" = "deadline",
+    "Effective Date" = "ef_date",
+    "Active" = "active",
     truncate.strings = FALSE
   ) %>% janitor::clean_names()
-  
   
   
   preselection <-
@@ -1494,25 +1515,44 @@ data_c3 -> results
       removeModal()
     })
 
-  sector_refresh <- reactive({
+  # sector_refresh <- reactive({
+  #   req(auth$result)  # <---- dependency on authentication result
+  #   req(values$org_name)
+  #  s <- queryTable(
+  #     sector_form_id,
+  #     "id" = "_id",
+  #     "3RP" = "cedz9l4ksa4g63ct",
+  #     "Code Name" = "cnv3sosksa3n9gh3",
+  #     "Code" = "cr5u0neksa5cnnz1i",
+  #     "Effective Sector" = "cit2ts4ksa4hk5y17",
+  #     "Lead" = "cwxsxuvlbmmtv1h2.c5ytxhyks7s2ygds",
+  #     "Access Token" = "cmma2o1lbpepm4g2",
+  #     "Co-Lead" = "cr5wcpvlbmmunhl3.c5ytxhyks7s2ygds",
+  #     "Active" = "cn2o33wksa4kntm1g",
+  #     truncate.strings = FALSE
+  #   ) %>% janitor::clean_names() %>% filter(active == "Yes" &
+  #                                             effective_sector == "Yes" &
+  #                                             x3rp == "Yes") %>% mutate(code_name_1 = code_name) %>% remove_rownames %>% column_to_rownames(var = "code_name_1")
+      sector_refresh <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     req(values$org_name)
    s <- queryTable(
       sector_form_id,
       "id" = "_id",
-      "3RP" = "cedz9l4ksa4g63ct",
-      "Code Name" = "cnv3sosksa3n9gh3",
-      "Code" = "cr5u0neksa5cnnz1i",
-      "Effective Sector" = "cit2ts4ksa4hk5y17",
-      "Lead" = "cwxsxuvlbmmtv1h2.c5ytxhyks7s2ygds",
-      "Access Token" = "cmma2o1lbpepm4g2",
-      "Co-Lead" = "cr5wcpvlbmmunhl3.c5ytxhyks7s2ygds",
-      "Active" = "cn2o33wksa4kntm1g",
+      "3RP" = "three_rp",
+      "Code Name" = "sectorkey",
+      "Code" = "code",
+      "Effective Sector" = "effective_sector",
+      "Lead" = "lead_organization",
+      "Access Token" = "access_token",
+      "Co-Lead" = "co_lead_organization",
+      "Active" = "active",
       truncate.strings = FALSE
     ) %>% janitor::clean_names() %>% filter(active == "Yes" &
                                               effective_sector == "Yes" &
                                               x3rp == "Yes") %>% mutate(code_name_1 = code_name) %>% remove_rownames %>% column_to_rownames(var = "code_name_1")
   
+
    values$sector_for_this_lead_sec <- s %>% filter(co_lead == values$org_name$code_name | lead == values$org_name$code_name)
    
    values$sector_lead <- nrow(values$sector_for_this_lead_sec) > 0
@@ -1526,75 +1566,148 @@ data_c3 -> results
   s
     })
   
-  output_refresh <- reactive({
+  # output_refresh <- reactive({
+  #   req(auth$result)  # <---- dependency on authentication result
+    
+  #   queryTable(
+  #     "cd6g7molal21i30nyt",
+  #     "id" = "_id",
+  #     "Sector" = "caiwiqzl20fr2xjb.cnv3sosksa3n9gh3",
+  #     "Output" = "cz9wy11l1um54a69",
+  #     "3RP" = "c5fgcodlaqk259gy",
+  #     filter = paste0("c5fgcodlaqk259gy == 'Yes'"),
+  #     truncate.strings = FALSE
+  #   ) %>% janitor::clean_names() %>% mutate(output_1 = output) %>% remove_rownames %>% column_to_rownames(var = "output_1")
+    
+  # })
+    output_refresh <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     
     queryTable(
       "cd6g7molal21i30nyt",
       "id" = "_id",
-      "Sector" = "caiwiqzl20fr2xjb.cnv3sosksa3n9gh3",
-      "Output" = "cz9wy11l1um54a69",
-      "3RP" = "c5fgcodlaqk259gy",
-      filter = paste0("c5fgcodlaqk259gy == 'Yes'"),
+      "Sector" = "sector_key",
+      "Output" = "output",
+      "3RP" = "is_3rp",
+      filter = paste0("is_3rp == 'Yes'"),
       truncate.strings = FALSE
     ) %>% janitor::clean_names() %>% mutate(output_1 = output) %>% remove_rownames %>% column_to_rownames(var = "output_1")
     
   })
   
   
-  
+  # indicator_references_refresh <- reactive({
+  #   req(auth$result)  # <---- dependency on authentication result
+  #   queryTable(
+  #     "ch02jx3lb95bphk7",
+  #     "id" = "_id",
+  #     "Sector" = "c14zmpqlb95c3sq9.cnv3sosksa3n9gh3",
+  #     "Output" = "cm85z1olb9tb5nic.cz9wy11l1um54a69",
+  #     "Component" = "c6yezdolb95c3sqb",
+  #     "Indicator" = "cvdgro6lb95c3srm",
+  #     "Regional" = "cftf7d5lb95c3srv",
+  #     "Active" = "cp3lrjwlb9m876x9",
+  #     filter = "cp3lrjwlb9m876x9 == 'Yes'",
+  #     truncate.strings = FALSE
+  #   ) %>% janitor::clean_names() %>% mutate(indicator_1 = indicator) %>% remove_rownames %>% column_to_rownames(var = "indicator_1")
+    
+  # })
+
   indicator_references_refresh <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     queryTable(
       "ch02jx3lb95bphk7",
       "id" = "_id",
-      "Sector" = "c14zmpqlb95c3sq9.cnv3sosksa3n9gh3",
-      "Output" = "cm85z1olb9tb5nic.cz9wy11l1um54a69",
-      "Component" = "c6yezdolb95c3sqb",
-      "Indicator" = "cvdgro6lb95c3srm",
-      "Regional" = "cftf7d5lb95c3srv",
-      "Active" = "cp3lrjwlb9m876x9",
-      filter = "cp3lrjwlb9m876x9 == 'Yes'",
+      "Sector" = "sector",
+      "Output" = "output",
+      "Component" = "component",
+      "Indicator" = "indicator",
+      "Regional" = "regional",
+      "Active" = "active",
+      filter = "active == 'Yes'",
       truncate.strings = FALSE
     ) %>% janitor::clean_names() %>% mutate(indicator_1 = indicator) %>% remove_rownames %>% column_to_rownames(var = "indicator_1")
     
   })
+  
+  # organization_refresh <- reactive({
+  #   req(auth$result)  # <---- dependency on authentication result
+  #   queryTable(
+  #     organization_form_id,
+  #     "id" = "_id",
+  #     "Appealing" = "cd6kakml733j7ga7",
+  #     "Code Name" = "c5ytxhyks7s2ygds",
+  #     "Acronym" = "cmguuq9ks78tw006",
+  #     "Code" = "c2lrasyks78sxm75",
+  #     "Alternative Name" = "cyq1e07ks7rrfxv5",
+  #     "Type" = "cg097b7ks794p6m10.cvbf9fbks7uv2msy",
+  #     "Implementer" = "cltmkhoks7rwer8q",
+  #     "Donor" = "cc6kkk8ks7rtbj7i",
+  #     "Active" = "comzfppks7rsqhvb",
+  #     truncate.strings = FALSE
+  #   ) %>% janitor::clean_names() %>% filter(active == "Yes") %>% mutate(code_name_1 = code_name)  %>% remove_rownames %>% column_to_rownames(var = "code_name_1")
+    
+  # })
   
   organization_refresh <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     queryTable(
       organization_form_id,
       "id" = "_id",
-      "Appealing" = "cd6kakml733j7ga7",
-      "Code Name" = "c5ytxhyks7s2ygds",
-      "Acronym" = "cmguuq9ks78tw006",
-      "Code" = "c2lrasyks78sxm75",
-      "Alternative Name" = "cyq1e07ks7rrfxv5",
-      "Type" = "cg097b7ks794p6m10.cvbf9fbks7uv2msy",
-      "Implementer" = "cltmkhoks7rwer8q",
-      "Donor" = "cc6kkk8ks7rtbj7i",
-      "Active" = "comzfppks7rsqhvb",
+      "Appealing" = "appealing",
+      "Code Name" = "code_name",
+      "Acronym" = "acronym",
+      "Code" = "code",
+      "Alternative Name" = "alternative_name",
+      "Type" = "org_type",
+      "Implementer" = "implementer",
+      "Donor" = "donor",
+      "Active" = "active",
       truncate.strings = FALSE
     ) %>% janitor::clean_names() %>% filter(active == "Yes") %>% mutate(code_name_1 = code_name)  %>% remove_rownames %>% column_to_rownames(var = "code_name_1")
     
   })
   
-  indicator_target_refresh <- reactive({
+  # indicator_target_refresh <- reactive({
+  #   req(auth$result)  # <---- dependency on authentication result
+  #   values$refresh_indicators
+  #   queryTable(
+  #     indicator_planning_form_id,
+  #     "id" = "_id",
+  #     "Planning Year" = "cbd3bxalb98bxd42a",
+  #     "Organization" = "chstnf1lb96fok91i.c5ytxhyks7s2ygds",
+  #     "Sector" = "cdew5q9lb97cfa826.cnv3sosksa3n9gh3",
+  #     "Output" = "c4eqiztlb9w5vgw2.cz9wy11l1um54a69",
+  #     "Indicator" = "cxrmk41lb96eurt1h.cvdgro6lb95c3srm",
+  #     "Indicator Target" = "cbi0x2slb96gb711j",
+  #     "To consider" = "c91mi18lbb6jnxcc",
+  #     "Active" = "cmtq82flb96gnff1p",
+  #     filter = paste0(
+  #       "chstnf1lb96fok91i.c5ytxhyks7s2ygds == '",
+  #       values$org_name$code_name,
+  #       "'"
+  #     ),
+  #     truncate.strings = FALSE
+  #   ) %>% janitor::clean_names()
+    
+  # })
+  
+    indicator_target_refresh <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     values$refresh_indicators
     queryTable(
       indicator_planning_form_id,
       "id" = "_id",
-      "Planning Year" = "cbd3bxalb98bxd42a",
-      "Organization" = "chstnf1lb96fok91i.c5ytxhyks7s2ygds",
-      "Sector" = "cdew5q9lb97cfa826.cnv3sosksa3n9gh3",
-      "Output" = "c4eqiztlb9w5vgw2.cz9wy11l1um54a69",
-      "Indicator" = "cxrmk41lb96eurt1h.cvdgro6lb95c3srm",
-      "Indicator Target" = "cbi0x2slb96gb711j",
-      "To consider" = "c91mi18lbb6jnxcc",
-      "Active" = "cmtq82flb96gnff1p",
+      "Planning Year" = "planning_year",
+      "Organization" = "organization",
+      "Sector" = "sector_op",
+      "Output" = "output",
+      "Indicator" = "indicator",
+      "Indicator Target" = "indicator_target",
+      "To consider" = "to_consider",
+      "Active" = "active",
       filter = paste0(
-        "chstnf1lb96fok91i.c5ytxhyks7s2ygds == '",
+        "organization == '",
         values$org_name$code_name,
         "'"
       ),
@@ -1602,6 +1715,28 @@ data_c3 -> results
     ) %>% janitor::clean_names()
     
   })
+
+  # get_indicator_target_refresh_sec_all <- reactive({
+  #   req(auth$result)  # <---- dependency on authentication result
+  #   values$refresh_is_sector_lead
+  #   queryTable(
+  #     indicator_planning_form_id,
+  #     "id" = "_id",
+  #     "Planning Year" = "cbd3bxalb98bxd42a",
+  #     "Organization" = "chstnf1lb96fok91i.c5ytxhyks7s2ygds",
+  #     "Sector" = "cdew5q9lb97cfa826.cnv3sosksa3n9gh3",
+  #     "Output" = "c4eqiztlb9w5vgw2.cz9wy11l1um54a69",
+  #     "Indicator" = "cxrmk41lb96eurt1h.cvdgro6lb95c3srm",
+  #     "Indicator Target" = "cbi0x2slb96gb711j",
+  #     "To consider" = "c91mi18lbb6jnxcc",
+  #     "Active" = "cmtq82flb96gnff1p",
+  #     filter = paste0(
+  #       "cmtq82flb96gnff1p == 'Yes' && c91mi18lbb6jnxcc == 'Yes'"
+  #     ),
+  #     truncate.strings = FALSE
+  #   ) %>% janitor::clean_names()
+  # })
+
   
   get_indicator_target_refresh_sec_all <- reactive({
     req(auth$result)  # <---- dependency on authentication result
@@ -1609,16 +1744,16 @@ data_c3 -> results
     queryTable(
       indicator_planning_form_id,
       "id" = "_id",
-      "Planning Year" = "cbd3bxalb98bxd42a",
-      "Organization" = "chstnf1lb96fok91i.c5ytxhyks7s2ygds",
-      "Sector" = "cdew5q9lb97cfa826.cnv3sosksa3n9gh3",
-      "Output" = "c4eqiztlb9w5vgw2.cz9wy11l1um54a69",
-      "Indicator" = "cxrmk41lb96eurt1h.cvdgro6lb95c3srm",
-      "Indicator Target" = "cbi0x2slb96gb711j",
-      "To consider" = "c91mi18lbb6jnxcc",
-      "Active" = "cmtq82flb96gnff1p",
+      "Planning Year" = "planning_year",
+      "Organization" = "organization",
+      "Sector" = "sector_op",
+      "Output" = "output",
+      "Indicator" = "indicator",
+      "Indicator Target" = "indicator_target",
+      "To consider" = "to_consider",
+      "Active" = "active",
       filter = paste0(
-        "cmtq82flb96gnff1p == 'Yes' && c91mi18lbb6jnxcc == 'Yes'"
+        "active == 'Yes' && to_consider == 'Yes'"
       ),
       truncate.strings = FALSE
     ) %>% janitor::clean_names()
@@ -1641,27 +1776,50 @@ data_c3 -> results
     sectors_to_consider_v2 <-
       isolate(planning_refresh()) %>% filter(to_consider == "Yes")
     req(values$org_name)
+  
+    # t <- queryTable(
+    #   budget_py_planning_form_id,
+    #   "id" = "_id",
+    #   "Planning Year" = "cf71s78lb4xv6emb",
+    #   "Year" = "cnh9nk2lb4xyyrwo",
+    #   "Sector" = "c4gyj5rlb4xv6enc.cnv3sosksa3n9gh3",
+    #   "Organization" = "cnghew1lb4xv6eod.c5ytxhyks7s2ygds",
+    #   "Budget Type" = "cfu6nkwlb4xv6eof",
+    #   "Donors" = "c6ou2qtlb725oq02.c5ytxhyks7s2ygds",
+    #   "Refugee Budget" = "c8t5vualb4xv6epj",
+    #   "Resilience Budget" = "c3kqsvslb4xv6epk",
+    #   "To consider" = "cdwwtlklbb6ixwc9",
+    #   "Active" = "crbzchylb4xv6epl",
+    #   filter = paste0(
+    #     "cnghew1lb4xv6eod.c5ytxhyks7s2ygds == '",
+    #     values$org_name$code_name,
+    #     "'"
+    #   ),
+    #   truncate.strings = FALSE
+    # ) %>% janitor::clean_names()
+
+    
     t <- queryTable(
       budget_py_planning_form_id,
       "id" = "_id",
-      "Planning Year" = "cf71s78lb4xv6emb",
-      "Year" = "cnh9nk2lb4xyyrwo",
-      "Sector" = "c4gyj5rlb4xv6enc.cnv3sosksa3n9gh3",
-      "Organization" = "cnghew1lb4xv6eod.c5ytxhyks7s2ygds",
+      "Planning Year" = "planning_year",
+      "Year" = "year_of_reception",
+      "Sector" = "sector_r",
+      "Organization" = "organization",
       "Budget Type" = "cfu6nkwlb4xv6eof",
-      "Donors" = "c6ou2qtlb725oq02.c5ytxhyks7s2ygds",
-      "Refugee Budget" = "c8t5vualb4xv6epj",
-      "Resilience Budget" = "c3kqsvslb4xv6epk",
-      "To consider" = "cdwwtlklbb6ixwc9",
-      "Active" = "crbzchylb4xv6epl",
+      "Donors" = "donor",
+      "Refugee Budget" = "refugee_budget",
+      "Resilience Budget" = "resilience_budget",
+      "To consider" = "to_consider",
+      "Active" = "active",
       filter = paste0(
-        "cnghew1lb4xv6eod.c5ytxhyks7s2ygds == '",
+        "organization == '",
         values$org_name$code_name,
         "'"
       ),
       truncate.strings = FALSE
     ) %>% janitor::clean_names()
-    
+
     to_inactivate <-
       t %>% filter(
         !sector %in% unique(sectors_to_consider$code_name) |
@@ -1681,21 +1839,45 @@ data_c3 -> results
                     recordIdColumn = "id")
       }
     }
+    
+  #   queryTable(
+  #     budget_py_planning_form_id,
+  #     "id" = "_id",
+  #     "Planning Year" = "cf71s78lb4xv6emb",
+  #     "Year" = "cnh9nk2lb4xyyrwo",
+  #     "Sector" = "c4gyj5rlb4xv6enc.cnv3sosksa3n9gh3",
+  #     "Organization" = "cnghew1lb4xv6eod.c5ytxhyks7s2ygds",
+  #     "Budget Type" = "cfu6nkwlb4xv6eof",
+  #     "Donors" = "c6ou2qtlb725oq02.c5ytxhyks7s2ygds",
+  #     "Refugee Budget" = "c8t5vualb4xv6epj",
+  #     "Resilience Budget" = "c3kqsvslb4xv6epk",
+  #     "To consider" = "cdwwtlklbb6ixwc9",
+  #     "Active" = "crbzchylb4xv6epl",
+  #     filter = paste0(
+  #       "cnghew1lb4xv6eod.c5ytxhyks7s2ygds == '",
+  #       values$org_name$code_name,
+  #       "'"
+  #     ),
+  #     truncate.strings = FALSE
+  #   ) %>% janitor::clean_names()
+    
+  # })
+  
     queryTable(
       budget_py_planning_form_id,
       "id" = "_id",
-      "Planning Year" = "cf71s78lb4xv6emb",
-      "Year" = "cnh9nk2lb4xyyrwo",
-      "Sector" = "c4gyj5rlb4xv6enc.cnv3sosksa3n9gh3",
-      "Organization" = "cnghew1lb4xv6eod.c5ytxhyks7s2ygds",
-      "Budget Type" = "cfu6nkwlb4xv6eof",
-      "Donors" = "c6ou2qtlb725oq02.c5ytxhyks7s2ygds",
-      "Refugee Budget" = "c8t5vualb4xv6epj",
-      "Resilience Budget" = "c3kqsvslb4xv6epk",
-      "To consider" = "cdwwtlklbb6ixwc9",
-      "Active" = "crbzchylb4xv6epl",
+      "Planning Year" = "planning_year",
+      "Year" = "year_of_reception",
+      "Sector" = "sector_r",
+      "Organization" = "organization",
+      "Budget Type" = "type_budget",
+      "Donors" = "donor",
+      "Refugee Budget" = "refugee_budget",
+      "Resilience Budget" = "resilience_budget",
+      "To consider" = "to_consider",
+      "Active" = "active",
       filter = paste0(
-        "cnghew1lb4xv6eod.c5ytxhyks7s2ygds == '",
+        "organization == '",
         values$org_name$code_name,
         "'"
       ),
@@ -1703,30 +1885,50 @@ data_c3 -> results
     ) %>% janitor::clean_names()
     
   })
-  
   get_planning_py_refresh_sec_all <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     values$refresh_is_sector_lead
+
+  #   queryTable(
+  #     budget_py_planning_form_id,
+  #     "id" = "_id",
+  #     "Planning Year" = "cf71s78lb4xv6emb",
+  #     "Year" = "cnh9nk2lb4xyyrwo",
+  #     "Sector" = "c4gyj5rlb4xv6enc.cnv3sosksa3n9gh3",
+  #     "Organization" = "cnghew1lb4xv6eod.c5ytxhyks7s2ygds",
+  #     "Budget Type" = "cfu6nkwlb4xv6eof",
+  #     "Donors" = "c6ou2qtlb725oq02.c5ytxhyks7s2ygds",
+  #     "Refugee Budget" = "c8t5vualb4xv6epj",
+  #     "Resilience Budget" = "c3kqsvslb4xv6epk",
+  #     "To consider" = "cdwwtlklbb6ixwc9",
+  #     "Active" = "crbzchylb4xv6epl",
+  #     filter = paste0(
+  #       "crbzchylb4xv6epl == 'Yes' && cdwwtlklbb6ixwc9 == 'Yes'"
+  #     ),
+  #     truncate.strings = FALSE
+  #   ) %>% janitor::clean_names()
+  # })
+
     queryTable(
       budget_py_planning_form_id,
       "id" = "_id",
-      "Planning Year" = "cf71s78lb4xv6emb",
-      "Year" = "cnh9nk2lb4xyyrwo",
-      "Sector" = "c4gyj5rlb4xv6enc.cnv3sosksa3n9gh3",
-      "Organization" = "cnghew1lb4xv6eod.c5ytxhyks7s2ygds",
-      "Budget Type" = "cfu6nkwlb4xv6eof",
-      "Donors" = "c6ou2qtlb725oq02.c5ytxhyks7s2ygds",
-      "Refugee Budget" = "c8t5vualb4xv6epj",
-      "Resilience Budget" = "c3kqsvslb4xv6epk",
-      "To consider" = "cdwwtlklbb6ixwc9",
-      "Active" = "crbzchylb4xv6epl",
+      "Planning Year" = "planning_year",
+      "Year" = "year_of_reception",
+      "Sector" = "sector_r",
+      "Organization" = "organization",
+      "Budget Type" = "type_budget",
+      "Donors" = "donor",
+      "Refugee Budget" = "refugee_budget",
+      "Resilience Budget" = "resilience_budget",
+      "To consider" = "to_consider",
+      "Active" = "active",
       filter = paste0(
-        "crbzchylb4xv6epl == 'Yes' && cdwwtlklbb6ixwc9 == 'Yes'"
+        "active == 'Yes' && to_consider == 'Yes'"
       ),
       truncate.strings = FALSE
     ) %>% janitor::clean_names()
   })
-  
+
   planning_py_refresh_sec <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     req(values$main_sector)
@@ -1819,27 +2021,49 @@ data_c3 -> results
     sectors_to_consider <-
       isolate(sector_refresh()) %>% filter(x3rp == "Yes")
     indicator_to_consider <- isolate(indicator_references_refresh())
+    # t <- queryTable(
+    #   budget_planning_form_id,
+    #   "id" = "_id",
+    #   "Planning Year" = "cp0hc5slb3iu2g59",
+    #   "Sector" = "cdnqtiqlb0qhy466.cnv3sosksa3n9gh3",
+    #   "Organization" = "cpa1ggxlb0qhy477.c5ytxhyks7s2ygds",
+    #   "Output" = "cq2e3oflb0qhy488.cz9wy11l1um54a69",
+    #   "Budget Requirement" = "coj6cv0lb0qhy48e",
+    #   "Youth Budget" = "cibq5rulb0qhy48f",
+    #   "Refugee Budget" = "celmri7lb0qhy48g",
+    #   "Resilience Budget" = "cpy8fv9lb0qhy48h",
+    #   "To consider" = "c920wa8lbb6gebw7",
+    #   "Active" = "cv6oh41lb3d38yw7",
+    #   filter = paste0(
+    #     "cpa1ggxlb0qhy477.c5ytxhyks7s2ygds == '",
+    #     values$org_name$code_name,
+    #     "'"
+    #   ),
+    #   truncate.strings = FALSE
+    # ) %>% janitor::clean_names()
+    
     t <- queryTable(
       budget_planning_form_id,
       "id" = "_id",
-      "Planning Year" = "cp0hc5slb3iu2g59",
-      "Sector" = "cdnqtiqlb0qhy466.cnv3sosksa3n9gh3",
-      "Organization" = "cpa1ggxlb0qhy477.c5ytxhyks7s2ygds",
-      "Output" = "cq2e3oflb0qhy488.cz9wy11l1um54a69",
-      "Budget Requirement" = "coj6cv0lb0qhy48e",
-      "Youth Budget" = "cibq5rulb0qhy48f",
-      "Refugee Budget" = "celmri7lb0qhy48g",
-      "Resilience Budget" = "cpy8fv9lb0qhy48h",
-      "To consider" = "c920wa8lbb6gebw7",
-      "Active" = "cv6oh41lb3d38yw7",
+      "Planning Year" = "planning_year",
+      "Sector" = "sector_r",
+      "Organization" = "organization",
+      "Output" = "output_r",
+      "Budget Requirement" = "total_budget",
+      "Youth Budget" = "youth_budget",
+      "Refugee Budget" = "refugee_budget",
+      "Resilience Budget" = "resilience_budget",
+      "To consider" = "to_consider",
+      "Active" = "active",
       filter = paste0(
-        "cpa1ggxlb0qhy477.c5ytxhyks7s2ygds == '",
+        "organization == '",
         values$org_name$code_name,
         "'"
       ),
       truncate.strings = FALSE
     ) %>% janitor::clean_names()
-    
+
+
     to_inactivate <-
       t %>% filter(
         !output %in% unique(indicator_to_consider$output) |
@@ -1857,27 +2081,72 @@ data_c3 -> results
                   recordIdColumn = "id")
       
     }
+  #   queryTable(
+  #     budget_planning_form_id,
+  #     "id" = "_id",
+  #     "Planning Year" = "cp0hc5slb3iu2g59",
+  #     "Sector" = "cdnqtiqlb0qhy466.cnv3sosksa3n9gh3",
+  #     "Organization" = "cpa1ggxlb0qhy477.c5ytxhyks7s2ygds",
+  #     "Output" = "cq2e3oflb0qhy488.cz9wy11l1um54a69",
+  #     "Budget Requirement" = "coj6cv0lb0qhy48e",
+  #     "Youth Budget" = "cibq5rulb0qhy48f",
+  #     "Refugee Budget" = "celmri7lb0qhy48g",
+  #     "Resilience Budget" = "cpy8fv9lb0qhy48h",
+  #     "To consider" = "c920wa8lbb6gebw7",
+  #     "Active" = "cv6oh41lb3d38yw7",
+  #     filter = paste0(
+  #       "cpa1ggxlb0qhy477.c5ytxhyks7s2ygds == '",
+  #       values$org_name$code_name,
+  #       "'"
+  #     ),
+  #     truncate.strings = FALSE
+  #   ) %>% janitor::clean_names()
+  # })
+  
     queryTable(
       budget_planning_form_id,
       "id" = "_id",
-      "Planning Year" = "cp0hc5slb3iu2g59",
-      "Sector" = "cdnqtiqlb0qhy466.cnv3sosksa3n9gh3",
-      "Organization" = "cpa1ggxlb0qhy477.c5ytxhyks7s2ygds",
-      "Output" = "cq2e3oflb0qhy488.cz9wy11l1um54a69",
-      "Budget Requirement" = "coj6cv0lb0qhy48e",
-      "Youth Budget" = "cibq5rulb0qhy48f",
-      "Refugee Budget" = "celmri7lb0qhy48g",
-      "Resilience Budget" = "cpy8fv9lb0qhy48h",
-      "To consider" = "c920wa8lbb6gebw7",
-      "Active" = "cv6oh41lb3d38yw7",
+      "Planning Year" = "planning_year",
+      "Sector" = "sector_r",
+      "Organization" = "organization",
+      "Output" = "output_r",
+      "Budget Requirement" = "total_budget",
+      "Youth Budget" = "youth_budget",
+      "Refugee Budget" = "refugee_budget",
+      "Resilience Budget" = "resilience_budget",
+      "To consider" = "to_consider",
+      "Active" = "active",
       filter = paste0(
-        "cpa1ggxlb0qhy477.c5ytxhyks7s2ygds == '",
+        "organization == '",
         values$org_name$code_name,
         "'"
       ),
       truncate.strings = FALSE
     ) %>% janitor::clean_names()
   })
+
+  # get_planning_refresh_sec_all <- reactive({
+  #   req(auth$result)  # <---- dependency on authentication result
+  #   values$refresh_is_sector_lead
+  #   queryTable(
+  #     budget_planning_form_id,
+  #     "id" = "_id",
+  #     "Planning Year" = "cp0hc5slb3iu2g59",
+  #     "Sector" = "cdnqtiqlb0qhy466.cnv3sosksa3n9gh3",
+  #     "Organization" = "cpa1ggxlb0qhy477.c5ytxhyks7s2ygds",
+  #     "Output" = "cq2e3oflb0qhy488.cz9wy11l1um54a69",
+  #     "Budget Requirement" = "coj6cv0lb0qhy48e",
+  #     "Youth Budget" = "cibq5rulb0qhy48f",
+  #     "Refugee Budget" = "celmri7lb0qhy48g",
+  #     "Resilience Budget" = "cpy8fv9lb0qhy48h",
+  #     "To consider" = "c920wa8lbb6gebw7",
+  #     "Active" = "cv6oh41lb3d38yw7",
+  #     filter = paste0(
+  #       "cv6oh41lb3d38yw7 == 'Yes' && c920wa8lbb6gebw7 == 'Yes'"
+  #     ),
+  #     truncate.strings = FALSE
+  #   ) %>% janitor::clean_names()
+  # })
   
   get_planning_refresh_sec_all <- reactive({
     req(auth$result)  # <---- dependency on authentication result
@@ -1885,23 +2154,23 @@ data_c3 -> results
     queryTable(
       budget_planning_form_id,
       "id" = "_id",
-      "Planning Year" = "cp0hc5slb3iu2g59",
-      "Sector" = "cdnqtiqlb0qhy466.cnv3sosksa3n9gh3",
-      "Organization" = "cpa1ggxlb0qhy477.c5ytxhyks7s2ygds",
-      "Output" = "cq2e3oflb0qhy488.cz9wy11l1um54a69",
-      "Budget Requirement" = "coj6cv0lb0qhy48e",
-      "Youth Budget" = "cibq5rulb0qhy48f",
-      "Refugee Budget" = "celmri7lb0qhy48g",
-      "Resilience Budget" = "cpy8fv9lb0qhy48h",
-      "To consider" = "c920wa8lbb6gebw7",
-      "Active" = "cv6oh41lb3d38yw7",
+      "Planning Year" = "planning_year",
+      "Sector" = "sector_r",
+      "Organization" = "organization",
+      "Output" = "output_r",
+      "Budget Requirement" = "total_budget",
+      "Youth Budget" = "youth_budget",
+      "Refugee Budget" = "refugee_budget",
+      "Resilience Budget" = "resilience_budget",
+      "To consider" = "to_consider",
+      "Active" = "active",
       filter = paste0(
-        "cv6oh41lb3d38yw7 == 'Yes' && c920wa8lbb6gebw7 == 'Yes'"
+        "active == 'Yes' && to_consider == 'Yes'"
       ),
       truncate.strings = FALSE
     ) %>% janitor::clean_names()
   })
-  
+
   planning_refresh_sec <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     req(values$main_sector)
