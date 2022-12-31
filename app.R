@@ -55,6 +55,7 @@ activityInfoLogin(Sys.getenv('ACTIVITY_INFO_UN'),
 
 organization_form_id <- "cajkf0zlal21i30nyy"
 
+print("organization_first")
 organization_first <- queryTable(
   organization_form_id,
   "id" = "_id",
@@ -1366,7 +1367,7 @@ data_c3 -> results
   })
   
   disable("to_db_apply")
-  
+  print("steps")
   steps <- queryTable(
     "ckh1tqxlal21i30ny5",
     "Activity" = "cg690tnl264eh90d.cfs6pvcl2643ezn5",
@@ -1497,6 +1498,7 @@ data_c3 -> results
   sector_refresh <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     req(values$org_name)
+    print("sector_refresh")
    s <- queryTable(
       sector_form_id,
       "id" = "_id",
@@ -1528,7 +1530,7 @@ data_c3 -> results
   
   output_refresh <- reactive({
     req(auth$result)  # <---- dependency on authentication result
-    
+    print("output_refresh")
     queryTable(
       "cd6g7molal21i30nyt",
       "id" = "_id",
@@ -1545,7 +1547,8 @@ data_c3 -> results
   
   indicator_references_refresh <- reactive({
     req(auth$result)  # <---- dependency on authentication result
-    queryTable(
+    print("indicator_references_refresh")
+     queryTable(
       "ch02jx3lb95bphk7",
       "id" = "_id",
       "Sector" = "c14zmpqlb95c3sq9.cnv3sosksa3n9gh3",
@@ -1562,6 +1565,7 @@ data_c3 -> results
   
   organization_refresh <- reactive({
     req(auth$result)  # <---- dependency on authentication result
+    print("organization_refresh")
     queryTable(
       organization_form_id,
       "id" = "_id",
@@ -1582,6 +1586,7 @@ data_c3 -> results
   indicator_target_refresh <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     values$refresh_indicators
+    print("indicator_target_refresh")
     queryTable(
       indicator_planning_form_id,
       "id" = "_id",
@@ -1606,6 +1611,7 @@ data_c3 -> results
   get_indicator_target_refresh_sec_all <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     values$refresh_is_sector_lead
+    print("get_indicator_target_refresh_sec_all")
     queryTable(
       indicator_planning_form_id,
       "id" = "_id",
@@ -1641,6 +1647,7 @@ data_c3 -> results
     sectors_to_consider_v2 <-
       isolate(planning_refresh()) %>% filter(to_consider == "Yes")
     req(values$org_name)
+    print("planning_py_refresh")
     t <- queryTable(
       budget_py_planning_form_id,
       "id" = "_id",
@@ -1665,7 +1672,7 @@ data_c3 -> results
     to_inactivate <-
       t %>% filter(
         !sector %in% unique(sectors_to_consider$code_name) |
-          !sector %in% unique(sectors_to_consider_v2$sector)
+          !sector %in% unique(sectors_to_consider_v2$sector) | is.na(donors) | donors ==""
       )
     if (nrow(to_inactivate) > 0)
     {
@@ -1681,6 +1688,7 @@ data_c3 -> results
                     recordIdColumn = "id")
       }
     }
+    print("planning_py_refresh")
     queryTable(
       budget_py_planning_form_id,
       "id" = "_id",
@@ -1707,6 +1715,7 @@ data_c3 -> results
   get_planning_py_refresh_sec_all <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     values$refresh_is_sector_lead
+    print("get_planning_py_refresh_sec_all")
     queryTable(
       budget_py_planning_form_id,
       "id" = "_id",
@@ -1819,6 +1828,14 @@ data_c3 -> results
     sectors_to_consider <-
       isolate(sector_refresh()) %>% filter(x3rp == "Yes")
     indicator_to_consider <- isolate(indicator_references_refresh())
+    print("planning_refresh")
+    print(values$org_name$code_name)
+    value_filter <-  paste0(
+      "cpa1ggxlb0qhy477.c5ytxhyks7s2ygds == '",
+      values$org_name$code_name,"'"
+    )
+    print(value_filter)
+    
     t <- queryTable(
       budget_planning_form_id,
       "id" = "_id",
@@ -1832,13 +1849,11 @@ data_c3 -> results
       "Resilience Budget" = "cpy8fv9lb0qhy48h",
       "To consider" = "c920wa8lbb6gebw7",
       "Active" = "cv6oh41lb3d38yw7",
-      filter = paste0(
-        "cpa1ggxlb0qhy477.c5ytxhyks7s2ygds == '",
-        values$org_name$code_name,
-        "'"
-      ),
+      filter = value_filter,
       truncate.strings = FALSE
     ) %>% janitor::clean_names()
+   
+    print("end_planning_refresh")
     
     to_inactivate <-
       t %>% filter(
@@ -1857,6 +1872,7 @@ data_c3 -> results
                   recordIdColumn = "id")
       
     }
+    print("planning_refresh")
     queryTable(
       budget_planning_form_id,
       "id" = "_id",
@@ -1882,6 +1898,7 @@ data_c3 -> results
   get_planning_refresh_sec_all <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     values$refresh_is_sector_lead
+    print("get_planning_refresh_sec_all")
     queryTable(
       budget_planning_form_id,
       "id" = "_id",
@@ -2749,9 +2766,10 @@ data_c3 -> results
               resilience_budget,
               to_consider = "Yes",
               id
-            )
+            ) %>% filter(!is.na(donor) & donor != "")
           
           glimpse(budget_requirements_my)
+          if (nrow(budget_requirements_my) > 0)
           importTable(formId = budget_py_planning_form_id,
                       data = budget_requirements_my,
                       recordIdColumn = "id")
@@ -2831,9 +2849,10 @@ data_c3 -> results
               resilience_budget,
               to_consider = "Yes",
               id
-            )
+            )%>% filter(!is.na(donor) & donor != "")
           
           glimpse(budget_requirements_co)
+          if (nrow(budget_requirements_co) > 0)
           importTable(formId = budget_py_planning_form_id,
                       data = budget_requirements_co,
                       recordIdColumn = "id")
