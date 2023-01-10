@@ -1,7 +1,7 @@
 <!-- PROJECT LOGO -->
 
 <br />
-<p style="‘text-align:justify’">
+<p style=‘text-align:justify’>
 <a href="https://rstudio.unhcr.org/iraq/3rp-planning/"> <img src="www/01full.png" alt="Logo" height="80"/> </a>
 </p>
 
@@ -52,7 +52,7 @@ Data coordination is essential because it helps organizations use and leverage t
 
 # Usage
 
-1. install the needed packages :
+1. Install the needed packages. (Please consider that we are using a custom package of Activity Info.)
 
 ```
 install.packages("shiny")
