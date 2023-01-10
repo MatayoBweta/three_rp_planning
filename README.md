@@ -1,10 +1,9 @@
 <!-- PROJECT LOGO -->
 
 <br />
-
-::: {align="center"}
+<p style="‘text-align:justify’">
 <a href="https://rstudio.unhcr.org/iraq/3rp-planning/"> <img src="www/01full.png" alt="Logo" height="80"/> </a>
-:::
+</p>
 
 <h3 align="center">
 
@@ -22,7 +21,7 @@ This platform efficiently handles the 3RP's information by supplying all the nec
 
 <p style="‘text-align:justify’">
 
-Data coordination is the process of organizing, managing, and distributing data so that it is accurate, consistent, and useable. Effective data coordination is necessary for ensuring that data is accessible, dependable, and valuable and for allowing businesses to maximize their data assets.
+Data coordination is the process of organizing, managing, and distributing data so that it is accurate, consistent, and usable. Effective data coordination is necessary for ensuring that data is accessible, dependable, and valuable and for allowing businesses to maximize their data assets.
 
 </p>
 
@@ -34,18 +33,15 @@ This platform provides various crucial data coordination pieces, including:
 
 <ul>
 
-```{=html}
+
 <li style=‘text-align: justify;’><strong>Data governance</strong>: This involves establishing policies, procedures, and standards for managing data, including who has access to it and how it can be used. The governance is driven by 3RP guidance and is integrated into the tool steps to implement.</li>
-```
-```{=html}
+
 <li style=‘text-align: justify;’><strong>Data management</strong>: This includes storing, organizing, and protecting data, as well as ensuring that it is accurate, consistent, and up to date. An embedded data quality module ensures that the appropriate stakeholders know and address the data quality issues promptly.</li>
-```
-```{=html}
+
 <li style=‘text-align: justify;’><strong>Data sharing</strong>: It involves making data available to authorized users within an organization or beyond, including using data portals or other tools. The system allows downloading the data in excel format and sharing it with other stakeholders.</li>
-```
-```{=html}
+
 <li style=‘text-align: justify;’><strong>Data integration</strong>: This involves combining data from different sources, systems, or formats to create a single, cohesive view of the data. All the data produced in the system will be directly registered in Activity Info, and that can facilitate the follow-up and ensure that the data is well integrated with existing systems in place for planning and monitoring.</li>
-```
+
 </ul>
 
 <p style="‘text-align:justify’">
