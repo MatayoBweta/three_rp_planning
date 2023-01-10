@@ -1359,17 +1359,21 @@ data_c3 -> results
   output_form_id <- "cd6g7molal21i30nyt"
   output_reference_column <- "is_3rp"
   
+  steps_form_id <- "ckh1tqxlal21i30ny5"
+  
+  indicator_reference_form_id <- "ch02jx3lb95bphk7"
+  
   session$onSessionEnded(function()
   {
     print('hello, the session has ended')
   })
   
-  steps_table_id <- "ckh1tqxlal21i30ny5"
+ 
   
   disable("to_db_apply")
   print("steps")
   steps <- queryTable(
-    steps_table_id,
+    steps_form_id,
     "Activity" = "cg690tnl264eh90d.cfs6pvcl2643ezn5",
     "Quarter" = "ct0nl2zl264h881m",
     "Coordination Focal point" = "c2nw0ujlb0he6zcl",
@@ -1528,13 +1532,13 @@ data_c3 -> results
   s
     })
   
-  output_table_id <-  "cd6g7molal21i30nyt"
+  
   
   output_refresh <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     print("output_refresh")
     queryTable(
-      output_table_id,
+      output_form_id,
       "id" = "_id",
       "Sector" = "caiwiqzl20fr2xjb.cnv3sosksa3n9gh3",
       "Output" = "cz9wy11l1um54a69",
@@ -1545,13 +1549,13 @@ data_c3 -> results
     
   })
   
-  
+
   
   indicator_references_refresh <- reactive({
     req(auth$result)  # <---- dependency on authentication result
     print("indicator_references_refresh")
      queryTable(
-      "ch02jx3lb95bphk7",
+       indicator_reference_form_id,
       "id" = "_id",
       "Sector" = "c14zmpqlb95c3sq9.cnv3sosksa3n9gh3",
       "Output" = "cm85z1olb9tb5nic.cz9wy11l1um54a69",
