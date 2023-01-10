@@ -78,7 +78,7 @@ install.packages("formattable")
 install.packages("summaryBox")
 install.packages("gt")
 ```
-2. Configure Environmental variables by providing values relevant for Activity Info access and the planning year :
+2. Configure Environmental variables by providing values relevant for Activity Info access and the planning year. (Please consider that those variables can be store in a .Renviron file, the file can be added to the folder project and it will be visible to the app.R file) :
 
 ```
 ACTIVITY_INFO_UN = "xxx@xxx.xxx"
