@@ -1,7 +1,7 @@
 <!-- PROJECT LOGO -->
 
 <br />
-<p style=‘text-align:justify’>
+<p align="center">
 <a href="https://rstudio.unhcr.org/iraq/3rp-planning/"> <img src="www/01full.png" alt="Logo" height="80"/> </a>
 </p>
 
