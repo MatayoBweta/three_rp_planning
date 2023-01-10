@@ -18,3 +18,9 @@
 	<li style=‘text-align: justify;’><strong>Data integration</strong>: This involves combining data from different sources, systems, or formats to create a single, cohesive view of the data. All the data produced in the system will be directly registered in Activity Info, and that can facilitate the follow-up and ensure that the data is well integrated with existing systems in place for planning and monitoring.</li>
 </ul>
 <p style=‘text-align:justify’>Data coordination is essential because it helps organizations use and leverage their data assets effectively and make informed, data-driven decisions. Organization, IM, Sector Leads, and Inter-Sectoral coordination groups can access the same data set during the modifications using this unique tool.</p>
+
+# Usage
+
+During the package installation please use this version of activityInfo
+
+https://github.com/MatayoBweta/activityinfo-R
