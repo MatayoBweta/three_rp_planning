@@ -53,7 +53,7 @@ activityInfoLogin(Sys.getenv('ACTIVITY_INFO_UN'),
                   Sys.getenv('ACTIVITY_INFO_TOKEN'),
                   savePassword = FALSE)
 
-organization_form_id <- "cajkf0zlal21i30nyy"
+organization_form_id <-  Sys.getenv('organization_form_id')
 
 print("organization_first")
 organization_first <- queryTable(
@@ -1342,26 +1342,23 @@ data_c3 -> results
 }")
   })
   
-  indicator_form_id <- "ccjnpjylaxmcyfq4r"
   indicator_reference_column <- "is_3rp"
+  budget_planning_form_id <- Sys.getenv("budget_planning_form_id")
+  budget_py_planning_form_id <- Sys.getenv("budget_py_planning_form_id")
+  indicator_planning_form_id <- Sys.getenv("indicator_planning_form_id")
   
-  regional_indicator_form_id <- "ca2yfb3lap3qd5lp"
-  budget_planning_form_id <- "cwjs0inlb0qh70z5"
-  budget_py_planning_form_id <- "cd3dthxlb4xutv8a"
-  indicator_planning_form_id <- "c3jsofplb96e4x51g"
-  
-  sector_form_id <- "croqgk6lal21i30nyl"
+  sector_form_id <- Sys.getenv("sector_form_id")
   sector_reference_column <- "three_rp"
   
-  organization_form_id <- "cajkf0zlal21i30nyy"
+  organization_form_id <- Sys.getenv("organization_form_id")
   organization_reference_column <- "appealing"
   
-  output_form_id <- "cd6g7molal21i30nyt"
+  output_form_id <- Sys.getenv("output_form_id")
   output_reference_column <- "is_3rp"
   
-  steps_form_id <- "ckh1tqxlal21i30ny5"
+  steps_form_id <- Sys.getenv("steps_form_id")
   
-  indicator_reference_form_id <- "ch02jx3lb95bphk7"
+  indicator_reference_form_id <- Sys.getenv("indicator_reference_form_id")
   
   session$onSessionEnded(function()
   {
