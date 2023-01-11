@@ -50,7 +50,8 @@ my_theme <- bs_theme(
 # Let thematic know to update the fonts, too
 thematic_shiny(font = "auto")
 activityInfoLogin(Sys.getenv('ACTIVITY_INFO_UN'),
-                  Sys.getenv('ACTIVITY_INFO_TOKEN'))#,                  savePassword = FALSE)
+                  Sys.getenv('ACTIVITY_INFO_TOKEN'),
+                  savePassword = FALSE)
 
 organization_form_id <-  Sys.getenv('organization_form_id')
 
@@ -66,7 +67,7 @@ organization_first <- queryTable(
     "Appealing" = "appealing",
     filter = "appealing == 'Yes'",
     "Active" = "active",
-    truncate.strings = FALSE
+    truncateStrings = FALSE
 ) %>% janitor::clean_names() %>% filter(appealing == "Yes" &
                                           active == "Yes") %>% remove_rownames %>% column_to_rownames(var = "id")
 
@@ -1381,7 +1382,7 @@ data_c3 -> results
     "Deadline" = "deadline",
     "Effective Date" = "ef_date",
     "Active" = "active",
-    truncate.strings = FALSE
+    truncateStrings = FALSE
   ) %>% janitor::clean_names()
   
   
@@ -1511,7 +1512,7 @@ data_c3 -> results
       "Access Token" = "access_token",
       "Co-Lead" = "co_lead_organization.code_name",
       "Active" = "active",
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names() %>% filter(active == "Yes" &
                                               effective_sector == "Yes" &
                                               x3rp == "Yes") %>% mutate(code_name_1 = code_name) %>% remove_rownames %>% column_to_rownames(var = "code_name_1")
@@ -1541,7 +1542,7 @@ data_c3 -> results
       "Output" = "opkey",
       "3RP" = "is_3rp",
       filter = paste0("is_3rp == 'Yes'"),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names() %>% mutate(output_1 = output) %>% remove_rownames %>% column_to_rownames(var = "output_1")
     
   })
@@ -1561,7 +1562,7 @@ data_c3 -> results
        "Regional" = "regional_requirement",
        "Active" = "active",
        filter = "active == 'Yes'",
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names() %>% mutate(indicator_1 = indicator) %>% remove_rownames %>% column_to_rownames(var = "indicator_1")
     
   })
@@ -1581,7 +1582,7 @@ data_c3 -> results
       "Implementer" = "implementer",
       "Donor" = "donor",
       "Active" = "active",
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names() %>% filter(active == "Yes") %>% mutate(code_name_1 = code_name)  %>% remove_rownames %>% column_to_rownames(var = "code_name_1")
     
   })
@@ -1606,7 +1607,7 @@ data_c3 -> results
         values$org_name$code_name,
         "'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
     
   })
@@ -1629,7 +1630,7 @@ data_c3 -> results
       filter = paste0(
         "active == 'Yes' && to_consider == 'Yes'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
   })
   
@@ -1669,7 +1670,7 @@ data_c3 -> results
         values$org_name$code_name,
         "'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
     
     to_inactivate <-
@@ -1710,7 +1711,7 @@ data_c3 -> results
         values$org_name$code_name,
         "'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
     
   })
@@ -1735,7 +1736,7 @@ data_c3 -> results
       filter = paste0(
         "active == 'Yes' && to_consider == 'Yes'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
   })
   
@@ -1853,7 +1854,7 @@ data_c3 -> results
       "To consider" = "to_consider",
       "Active" = "active",
       filter = value_filter,
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
    
     print("end_planning_refresh")
@@ -1894,7 +1895,7 @@ data_c3 -> results
         values$org_name$code_name,
         "'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
   })
   
@@ -1918,7 +1919,7 @@ data_c3 -> results
       filter = paste0(
         "active == 'Yes' && to_consider == 'Yes'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
   })
   
