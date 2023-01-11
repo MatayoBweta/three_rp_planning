@@ -58,12 +58,41 @@ Master data relevant to the 3RP planning and monitoring will be accessible throu
 
 **Outputs**: In the theory of change, the output refers to the specific, measurable actions or changes that occur because of a program or intervention. These outputs are usually intermediate steps that lead to the desired long-term outcome or impact. For example, an educational program designed to improve literacy rates among students may have outputs such as an increased number of students attending classes, improved reading scores on standardized tests, and increased availability of reading materials.
 
+The following fields are relevant to capture for each output :
+- **Regional Strategic Direction**: The overarching strategy for providing humanitarian assistance in a specific region; in our case, it is the MENA region. This can include goals and objectives for addressing humanitarian and development needs and strategies for coordinating and delivering aid.
+- **Country Strategic Direction**: The strategy for providing humanitarian assistance in a specific country. This can include goals and objectives for addressing humanitarian needs and strategies for coordinating and delivering aid.
+- **Inter-Sectoral Outcome**: A desired outcome spans multiple sectors, such as improving access to essential services or reducing vulnerability.
+- **Sector**: The specific sector or area of focus within the humanitarian and development field to which the output is related, such as health, education, or protection.
+- **Objective**: The specific objective that the output is intended to achieve, such as increasing the number of people with access to clean water.
+- **Output**: The tangible and measurable result expected to be produced by a particular activity or series of activities, such as the number of people reached with a particular service or the number of households provided with shelter.
+- **Output Code**: A numerical or alphanumerical code assigned to a specific output can be used to identify and organize information related to that output.
+- **Output Key**: A unique identifier for the output containing the code and the output.
+3RP: Telling of it is a 3RP output or not.
+
 **Organizations**: Having a master list of organizations in a coordination setup is essential for several reasons:
 1.	**Clarity and Efficiency**: A master list of organizations can provide a clear and comprehensive overview of all the stakeholders involved in a project or initiative. This can help streamline communication and collaboration among different groups.
 2.	**Accountability**: A master list can help ensure that all parties know their roles and responsibilities and can help hold organizations accountable for their actions.
 3.	**Coordination**: A master list can help with coordination efforts by identifying overlaps and gaps in the activities of different organizations and facilitating communication and collaboration among them.
 4.	**Representation**: The master list ensures that all the necessary organizations and stakeholders are represented in the coordination setup and that no one is left out. This helps in making the project inclusive and equitable.
 5.	**Record-keeping and monitoring**: Having a master list of organizations can also help with record-keeping and monitoring the initiative's progress by providing a clear and consistent reference point.
+
+The following fields are used to provide details on each organization
+- **Code Name**: A unique identifier and the name of a specific humanitarian organization can be used to organize and track information about the organization.
+- **Acronym**: A shortened version of the organization's name that can be used for brevity in communications and documentation
+- **Code**: A numerical or alphanumerical code assigned to the organization which can be used to identify and organize information related to the organization
+- **Name**: The full name of the organization.
+- **Alternative Name**: Other names the organization may be known by.
+- **Access Token**: A string of characters that is used to authenticate and authorize access to information related to the organization.
+- **Description**: A summary of the organization's mission, activities, and focus areas.
+- **Organization Type**: The type of organization, such as non-governmental, inter-governmental, or government.
+- **Website**: The URL of the organization's official website.
+- **Language**: The primary language in which the organization's information is presented.
+- **Logo Link**: A URL link to an image file of the organization's logo.
+- **Implementer**: A field that tells if the organization is involved in implementing activities of a specific sector, project, or program.
+- **Is Appealing partner**: A field that tells if the organization is an appealing partner of an existing appeal framework.
+- **Donor**: A field that tells if the organization provides funding or other resources to other organizations involved in humanitarian activities.
+- **Active**: A field that tells whether or not the organization is currently active.
+- **Test**: A field to specify if the organization is being used for testing or not
 
 **Indicators**: Keeping a master list of indicators is essential for coordination because it:
 1.	**Facilitates communication and coordination**: A master list of indicators can help different organizations and stakeholders understand and align their efforts. It allows everyone to track progress and identify potential overlaps or gaps in their activities.
@@ -73,7 +102,27 @@ Master data relevant to the 3RP planning and monitoring will be accessible throu
 
 **Sectors**: The refugee coordination model identifies the leading sectors for addressing the needs of refugees and other displaced persons; these sectors are the core components of a comprehensive response to a displacement crisis and are each designed to address specific needs that arise because of displacement. These sectors are important because they are the basics that should be provided in an emergency so that they can make a significant difference in the lives of refugees and displaced persons. Focusing on these areas can prevent the spread of disease, improve living conditions, and contribute to overall well-being.
 
+The fields help to provide a clear and organized understanding of the activities and resources that are associated with that sector.
+
+- 	**Code Name**: A unique identifier and the name given to a specific sector or area of focus within the humanitarian field. 
+- **Code**: A numerical or alphanumerical code assigned to a specific sector can be used to identify and organize information related to that sector.
+- **Sector Number**: An number assigned to a specific sector can be used to identify and organize information related to that sector.
+- **Language**: The language in which the sector's information is primarily presented.
+- **Name**: The full name or title of the sector.
+- **Short Name**: A shortened version of the sector's name can be used for brevity in communications and documentation.
+- **3RP Name**: The sector's name in the context of the "3RP Response Plan" (3RP), which is a coordinated plan for providing humanitarian assistance in a specific crisis or region.
+- **Lead Organization**: The primary organization responsible for coordinating and leading activities within the sector.
+- **Co-Lead Organization**: An additional organization that may also lead in coordinating and leading activities within the sector.
+- **Access Token**: A string of characters used to authenticate and authorize access to information related to the sector.
+- **Color**: A color code or hex code associated with the sector can be used to color-code information or materials related to the sector.
+- **3RP Color**: The color used to represent the sector in visualizations related to the 3RP
+- **3RP**: Saying if the sector is a 3RP sector or not.
+- **Service**: Telling if the sector is supporting the provision of a set of services.
+- **Effective Sector**: Telling the sector is an effective sector or a set of sectors brought together to support a working group definition.
+- **Active**: A term indicating if the sector is currently active or not.
+
 ## Planning Data relevant to the 3RP planning
+
 The data collected will be crucial for the planning phase of the 3RP (Regional Refugee and Resilience Plan), providing vital information necessary to make informed decisions and design effective and targeted interventions. Planning data support identifying the needs and priorities of the affected population, determining the resources required, and setting realistic goals and objectives. The set of indicators and outputs defined during the planning stage will also help to monitor progress towards these goals and to adjust as necessary to ensure that assistance is reaching those who need it most.
 
 During the monitoring phase, the data will support the evaluation of the impact and effectiveness of the interventions, the identification of any gaps or shortcomings, and inform the implementation of any corrective measures that may be necessary. This will ensure that assistance reaches the intended beneficiaries, that resources are being used effectively, and that the overall response is on track to meet the established goals.
