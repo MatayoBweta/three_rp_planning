@@ -49,9 +49,9 @@ my_theme <- bs_theme(
 
 # Let thematic know to update the fonts, too
 thematic_shiny(font = "auto")
-activityInfoLogin(Sys.getenv('ACTIVITY_INFO_UN'),
-                  Sys.getenv('ACTIVITY_INFO_TOKEN'),
-                  savePassword = FALSE)
+
+options(activityinfo.interactive = FALSE)
+activityInfoToken(Sys.getenv('ACTIVITY_INFO_TOKEN'))
 
 organization_form_id <-  Sys.getenv('organization_form_id')
 
@@ -67,7 +67,7 @@ organization_first <- queryTable(
   "Appealing" = "cd6kakml733j7ga7",
   filter = "cd6kakml733j7ga7 == 'Yes'",
   "Active" = "comzfppks7rsqhvb",
-  truncate.strings = FALSE
+  truncateStrings = FALSE
 ) %>% janitor::clean_names() %>% filter(appealing == "Yes" &
                                           active == "Yes") %>% remove_rownames %>% column_to_rownames(var = "id")
 
@@ -182,22 +182,22 @@ present_mistakes <- function(data, rules) {
       fluidRow(
         column(
           3,
-          p("Rows:", class = "badge bg-primary text-wrap text-primary fs-5"),
+          p("Rows:", class = "badge bg-primary text-wrap text-white fs-5"),
           p(items, class = "fs-5 fw-bold")
         ),
         column(
           3,
-          p("NULL Values:", class = "badge bg-warning text-wrap text-warning fs-5"),
+          p("NULL Values:", class = "badge bg-warning text-wrap text-white fs-5"),
           p(nNA, class = "fs-5 fw-bold")
         ),
         column(
           3,
-          p("Passed the Criteria:", class = "badge bg-success text-wrap text-success fs-5"),
+          p("Passed the Criteria:", class = "badge bg-success text-wrap text-white fs-5"),
           p(passes, class = "fs-5 fw-bold")
         ),
         column(
           3,
-          p("Failed:", class = "badge bg-danger text-danger text-wrap fs-5"),
+          p("Failed:", class = "badge bg-danger text-white text-wrap fs-5"),
           p(fails, class = "fs-5 fw-bold")
         )
       ),
@@ -1381,7 +1381,7 @@ data_c3 -> results
     "Deadline" = "css9o0ll264gtj0g",
     "Effective Date" = "cupr3qyl264gcayf",
     "Active" = "cfu2xadlb0dg85md",
-    truncate.strings = FALSE
+    truncateStrings = FALSE
   ) %>% janitor::clean_names()
   
   
@@ -1511,7 +1511,7 @@ data_c3 -> results
       "Access Token" = "cmma2o1lbpepm4g2",
       "Co-Lead" = "cr5wcpvlbmmunhl3.c5ytxhyks7s2ygds",
       "Active" = "cn2o33wksa4kntm1g",
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names() %>% filter(active == "Yes" &
                                               effective_sector == "Yes" &
                                               x3rp == "Yes") %>% mutate(code_name_1 = code_name) %>% remove_rownames %>% column_to_rownames(var = "code_name_1")
@@ -1541,7 +1541,7 @@ data_c3 -> results
       "Output" = "cz9wy11l1um54a69",
       "3RP" = "c5fgcodlaqk259gy",
       filter = paste0("c5fgcodlaqk259gy == 'Yes'"),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names() %>% mutate(output_1 = output) %>% remove_rownames %>% column_to_rownames(var = "output_1")
     
   })
@@ -1561,7 +1561,7 @@ data_c3 -> results
       "Regional" = "cftf7d5lb95c3srv",
       "Active" = "cp3lrjwlb9m876x9",
       filter = "cp3lrjwlb9m876x9 == 'Yes'",
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names() %>% mutate(indicator_1 = indicator) %>% remove_rownames %>% column_to_rownames(var = "indicator_1")
     
   })
@@ -1581,7 +1581,7 @@ data_c3 -> results
       "Implementer" = "cltmkhoks7rwer8q",
       "Donor" = "cc6kkk8ks7rtbj7i",
       "Active" = "comzfppks7rsqhvb",
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names() %>% filter(active == "Yes") %>% mutate(code_name_1 = code_name)  %>% remove_rownames %>% column_to_rownames(var = "code_name_1")
     
   })
@@ -1606,7 +1606,7 @@ data_c3 -> results
         values$org_name$code_name,
         "'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
     
   })
@@ -1629,7 +1629,7 @@ data_c3 -> results
       filter = paste0(
         "cmtq82flb96gnff1p == 'Yes' && c91mi18lbb6jnxcc == 'Yes'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
   })
   
@@ -1669,7 +1669,7 @@ data_c3 -> results
         values$org_name$code_name,
         "'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
     
     to_inactivate <-
@@ -1710,7 +1710,7 @@ data_c3 -> results
         values$org_name$code_name,
         "'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
     
   })
@@ -1735,7 +1735,7 @@ data_c3 -> results
       filter = paste0(
         "crbzchylb4xv6epl == 'Yes' && cdwwtlklbb6ixwc9 == 'Yes'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
   })
   
@@ -1853,7 +1853,7 @@ data_c3 -> results
       "To consider" = "c920wa8lbb6gebw7",
       "Active" = "cv6oh41lb3d38yw7",
       filter = value_filter,
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
    
     print("end_planning_refresh")
@@ -1894,7 +1894,7 @@ data_c3 -> results
         values$org_name$code_name,
         "'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
   })
   
@@ -1918,7 +1918,7 @@ data_c3 -> results
       filter = paste0(
         "cv6oh41lb3d38yw7 == 'Yes' && c920wa8lbb6gebw7 == 'Yes'"
       ),
-      truncate.strings = FALSE
+      truncateStrings = FALSE
     ) %>% janitor::clean_names()
   })
   
