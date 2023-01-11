@@ -76,6 +76,24 @@ The following fields are relevant to capture for each output :
 4.	**Representation**: The master list ensures that all the necessary organizations and stakeholders are represented in the coordination setup and that no one is left out. This helps in making the project inclusive and equitable.
 5.	**Record-keeping and monitoring**: Having a master list of organizations can also help with record-keeping and monitoring the initiative's progress by providing a clear and consistent reference point.
 
+The following fields are used to provide details on each organization
+- **Code Name**: A unique identifier and the name of a specific humanitarian organization can be used to organize and track information about the organization.
+- **Acronym**: A shortened version of the organization's name that can be used for brevity in communications and documentation
+- **Code**: A numerical or alphanumerical code assigned to the organization which can be used to identify and organize information related to the organization
+- **Name**: The full name of the organization.
+- **Alternative Name**: Other names the organization may be known by.
+- **Access Token**: A string of characters that is used to authenticate and authorize access to information related to the organization.
+- **Description**: A summary of the organization's mission, activities, and focus areas.
+- **Organization Type**: The type of organization, such as non-governmental, inter-governmental, or government.
+- **Website**: The URL of the organization's official website.
+- **Language**: The primary language in which the organization's information is presented.
+- **Logo Link**: A URL link to an image file of the organization's logo.
+- **Implementer**: A field that tells if the organization is involved in implementing activities of a specific sector, project, or program.
+- **Is Appealing partner**: A field that tells if the organization is an appealing partner of an existing appeal framework.
+- **Donor**: A field that tells if the organization provides funding or other resources to other organizations involved in humanitarian activities.
+- **Active**: A field that tells whether or not the organization is currently active.
+- **Test**: A field to specify if the organization is being used for testing or not
+
 **Indicators**: Keeping a master list of indicators is essential for coordination because it:
 1.	**Facilitates communication and coordination**: A master list of indicators can help different organizations and stakeholders understand and align their efforts. It allows everyone to track progress and identify potential overlaps or gaps in their activities.
 2.	**Enhances consistency and comparability**: Having a master list of indicators ensures that all parties use the same definitions and measurement methods, enabling comparison of results and evaluation of the overall impact.
