@@ -172,7 +172,17 @@ TThe following fields must be gathered for the existing budget:
 6.	**Communication and advocacy**: Targets and indicators can be used to communicate the progress and results of programs to a broader audience and advocate for increased funding and support.
 7.	**Continuous improvement**: targets help to identify the gaps, track the progress and improve the program performance over time.
 
-# Usage
+This is the set of fields collected for indicator target
+- **Planning Year**: The year in which the proposed project and its associated performance indicators are outlined and established by the organization.
+- **Organization**: The entity responsible for the direct implementation of the project or the utilization of implementing partners to achieve the established performance indicator targets.
+- **Sector**: The specific domain of work to which the performance indicator pertains, such as food security, shelter, healthcare, education, and other essential needs.
+- **Output**: The precise results or set of activities associated with the performance indicator.
+- **Indicator**: The specific metric or measure that will be employed to monitor progress and evaluate the project's success. Examples of performance indicators may include the number of individuals receiving a specific service, the percentage of households with access to clean water, or the number of children enrolled in a particular program.
+- **Indicator Target**: The goal or target the organization aims to achieve for the designated performance indicator.
+- **Active**: Indicates whether the performance indicator is currently active and being implemented or if it has been completed and is no longer in use.
+
+
+# Prerequisites
 
 1. Install the needed packages. (Please consider that we are using a custom package of Activity Info.)
 
