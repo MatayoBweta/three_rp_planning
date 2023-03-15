@@ -17,7 +17,7 @@ library(tidyverse)
 library(janitor)
 library(bslib)
 library(shinymanager)
-library(showtext) # Needed for custom font support
+library(showtext)
 library(thematic)
 library(openxlsx)
 library(DiagrammeR)
@@ -409,6 +409,7 @@ change_consideration_py <-
       if (nrow(data_to_update)  >  0)
       {
         glimpse(data_to_update)
+
         importTable(formId = formId_value,
                     data = data_to_update,
                     recordIdColumn = "id")
@@ -1687,6 +1688,7 @@ data_c3 -> results
       if (nrow(to_inactivate) >  0)
       {
         glimpse(to_inactivate)
+
         importTable(formId = budget_py_planning_form_id,
                     data = to_inactivate,
                     recordIdColumn = "id")
@@ -1871,6 +1873,7 @@ data_c3 -> results
     if (nrow(to_inactivate) > 0)
     {
       glimpse(to_inactivate)
+
       importTable(formId = budget_planning_form_id,
                   data = to_inactivate,
                   recordIdColumn = "id")
@@ -2037,8 +2040,6 @@ data_c3 -> results
     present_mistakes(summarized_version, rules_comparaison)
     
   })
-  
-  
   
   output$contributions_data_quality <- renderUI({
     req(auth$result)  # <---- dependency on authentication result
@@ -2616,6 +2617,7 @@ data_c3 -> results
           if (nrow(to_inactivate)  >  0)
           {
             glimpse(to_inactivate)
+
             importTable(
               formId = budget_planning_form_id,
               data = to_inactivate,
@@ -2636,6 +2638,7 @@ data_c3 -> results
           if (nrow(to_reconsider) > 0)
           {
             glimpse(to_reconsider)
+
             importTable(
               formId = budget_planning_form_id,
               data = to_reconsider,
@@ -2677,6 +2680,9 @@ data_c3 -> results
             )
           
           glimpse(budget_requirements)
+          budget_requirements <- budget_requirements %>% 
+            mutate_at(c("refugee_budget","resilience_budget","total_budget","youth_budget"), ~replace_na(., 0))
+         
           importTable(formId = budget_planning_form_id,
                       data = budget_requirements,
                       recordIdColumn = "id")
@@ -2720,6 +2726,7 @@ data_c3 -> results
           if (nrow(to_inactivate_my)  >  0)
           {
             glimpse(to_inactivate_my)
+
             importTable(
               formId = budget_py_planning_form_id,
               data = to_inactivate_my,
@@ -2773,10 +2780,15 @@ data_c3 -> results
             ) %>% filter(!is.na(donor) & donor != "")
           
           glimpse(budget_requirements_my)
-          if (nrow(budget_requirements_my) > 0)
-          importTable(formId = budget_py_planning_form_id,
+          if (nrow(budget_requirements_my) > 0) {
+            budget_requirements_my <- budget_requirements_my %>% 
+              mutate_at(c("refugee_budget","resilience_budget"), ~replace_na(., 0))
+           
+            importTable(formId = budget_py_planning_form_id,
                       data = budget_requirements_my,
                       recordIdColumn = "id")
+          }
+          
         }
         
         proposed_co_donors <- c()
@@ -2807,6 +2819,7 @@ data_c3 -> results
           to_inactivate_co <-
             to_inactivate_co %>% mutate(to_consider == "No") %>% select(id, to_consider) %>% filter(!is.null(id))
           glimpse(to_inactivate_co)
+
           importTable(formId = budget_py_planning_form_id,
                       data = to_inactivate_co,
                       recordIdColumn = "id")
@@ -2818,6 +2831,7 @@ data_c3 -> results
           if (nrow(to_reconsider_co) >  0)
           {
             glimpse(to_reconsider_co)
+
             importTable(
               formId = budget_py_planning_form_id,
               data = to_reconsider_co,
@@ -2856,10 +2870,14 @@ data_c3 -> results
             )%>% filter(!is.na(donor) & donor != "")
           
           glimpse(budget_requirements_co)
-          if (nrow(budget_requirements_co) > 0)
-          importTable(formId = budget_py_planning_form_id,
-                      data = budget_requirements_co,
-                      recordIdColumn = "id")
+          if (nrow(budget_requirements_co) > 0) {
+            budget_requirements_co <- budget_requirements_co %>% 
+              mutate_at(c("refugee_budget","resilience_budget"), ~replace_na(., 0))
+            importTable(formId = budget_py_planning_form_id,
+                        data = budget_requirements_co,
+                        recordIdColumn = "id")
+          }
+          
         }
         values$refresh_budget <- !values$refresh_budget
         values$refresh_contributions <-
@@ -3310,6 +3328,7 @@ data_c3 -> results
       {
         budget <-
           (hot_to_r(input$tbl_budget_requirement)) %>% rownames_to_column()
+       
         glimpse(budget)
         budget <-  budget %>% rowwise() %>% transmute(
           active,
@@ -3324,6 +3343,7 @@ data_c3 -> results
         
         target_data <- isolate(indicator_target_refresh())
         glimpse(budget)
+        
         importTable(
           formId = budget_planning_form_id,
           data = budget %>% select(-output),
@@ -3386,6 +3406,7 @@ data_c3 -> results
           if (nrow(ind_to_reconsider)  >  0)
           {
             glimpse(ind_to_reconsider)
+
             importTable(
               formId = indicator_planning_form_id,
               data = ind_to_reconsider,
@@ -3424,6 +3445,8 @@ data_c3 -> results
             id
           )
           glimpse(indicator_requirement)
+          indicator_requirement <- indicator_requirement %>% 
+            mutate_at(c("indicator_target"), ~replace_na(., 0))
           importTable(formId = indicator_planning_form_id,
                       data = indicator_requirement,
                       recordIdColumn = "id")
@@ -3432,6 +3455,8 @@ data_c3 -> results
         
         existing_budget <-
           (hot_to_r(input$tbl_existing_budget)) %>% rownames_to_column()
+        existing_budget <- existing_budget %>% 
+          mutate_at(c("refugee_budget","resilience_budget"), ~replace_na(., 0))
         existing_budget <-
           existing_budget %>% rowwise() %>% transmute(
             active,
@@ -3492,7 +3517,8 @@ data_c3 -> results
       indicators <-  indicators %>% rowwise() %>% transmute(active,
                                                             indicator_target ,
                                                             id  = rowname)
-      
+      indicators <- indicators %>% 
+        mutate_at(c("indicator_target"), ~replace_na(., 0))
       importTable(
         formId = indicator_planning_form_id,
         data = indicators,
